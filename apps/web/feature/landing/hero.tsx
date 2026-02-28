@@ -4,7 +4,7 @@ import Image from "next/image";
 
 export const HeroSection = () => {
   return (
-    <section className="relative overflow-hidden bg-[#F4F4FB]">
+    <section className="relative overflow-hidden bg-[#F8F8FD]">
       <BackgroundLines />
 
       <div className="relative z-10 mx-auto grid w-full max-w-435 grid-cols-1 px-6 pb-12 pt-14 sm:px-10 lg:px-16 xl:grid-cols-[minmax(0,1.12fr)_minmax(0,0.88fr)] xl:px-24 xl:pb-0 xl:pt-16">

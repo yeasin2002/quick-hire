@@ -1,4 +1,4 @@
-import { Epilogue } from "next/font/google";
+import { Epilogue, Red_Hat_Display } from "next/font/google";
 import localFont from "next/font/local";
 
 const clashDisplay = localFont({
@@ -34,8 +34,14 @@ const clashDisplay = localFont({
       style: "normal",
     },
   ],
-  variable: "--font-red-hat",
+  variable: "--font-clashDisplay",
   display: "swap",
+});
+
+const RedHatDisplay = Red_Hat_Display({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
+  variable: "--font-red-hat",
 });
 
 const epilogue = Epilogue({
@@ -44,6 +50,6 @@ const epilogue = Epilogue({
   variable: "--font-epilogue",
 });
 
-const fontList = [clashDisplay, epilogue];
+const fontList = [RedHatDisplay, epilogue, clashDisplay];
 
 export const fontVariables = fontList.map((f) => f.variable);

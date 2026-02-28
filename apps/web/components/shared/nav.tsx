@@ -8,7 +8,7 @@ const navLinks = [
 
 export const Nav = () => {
   return (
-    <header className=" text-[#515B6F]">
+    <header className=" text-[#515B6F] bg-[#F8F8FD]">
       <div className="mx-auto flex w-full max-w-435 items-center justify-between px-6 py-5 sm:px-10 lg:px-16 xl:px-24">
         <div className="flex items-center gap-8 lg:gap-16">
           <Link
