@@ -5,9 +5,9 @@ import { CategoryCard } from "./category-card";
 
 export const ExploreByCategory = () => {
   return (
-    <section className="mx-auto w-full max-w-[1740px] px-4 py-12 sm:px-8 sm:py-16 lg:px-16 xl:px-24 xl:py-20">
-      <h2 className="text-[32px] font-semibold leading-[1.08] tracking-[-0.02em] text-[#25324B] sm:text-5xl font-clashDisplay">
-        Explore by <span className="text-[#4640DE]">category</span>
+    <section className="landing-section-container">
+      <h2 className="landing-section-heading">
+        Explore by <span className="text-[#26A4FF]">category</span>
       </h2>
 
       <div className="mt-6 grid grid-cols-1 gap-4 md:mt-10 md:gap-6 md:grid-cols-2 xl:grid-cols-4">

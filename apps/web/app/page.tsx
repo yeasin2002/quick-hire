@@ -1,6 +1,7 @@
 import {
   CompaniesTrustList,
   ExploreByCategory,
+  FeaturedJobs,
   HeroSection,
 } from "@/feature/landing";
 
@@ -10,6 +11,7 @@ export default function Page() {
       <HeroSection />
       <CompaniesTrustList />
       <ExploreByCategory />
+      <FeaturedJobs />
     </div>
   );
 }

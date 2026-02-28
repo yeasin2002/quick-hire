@@ -47,6 +47,7 @@
   --font-red-hat: var(--font-red-hat);
   --font-epilogue: var(--font-epilogue);
   --font-clashDisplay: var(--font-clashDisplay);
+  --font-intern: var(--font-intern);
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -92,5 +93,15 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+
+@layer components {
+  .landing-section-container {
+    @apply mx-auto w-full max-w-435 px-4 py-12 sm:px-8 sm:py-16 lg:px-16 xl:px-24 xl:py-20
+  }
+  .landing-section-heading {
+    @apply text-[32px] font-semibold leading-[1.08] tracking-[-0.02em] text-[#25324B] sm:text-5xl font-clashDisplay
   }
 }
