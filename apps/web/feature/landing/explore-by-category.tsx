@@ -1,12 +1,14 @@
 import { categories as fallbackCategories } from "@/data/categories.data";
-import { resolveCategoryIcon } from "@/lib/job-board-assets";
 import { getCategoriesApi } from "@/lib/job-board-api";
+import { resolveCategoryIcon } from "@/lib/job-board-assets";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { CategoryCard } from "./category-card";
 
 export const ExploreByCategory = async () => {
   const apiCategories = await getCategoriesApi();
+  console.log("🚀 ~ ExploreByCategory ~ apiCategories:", apiCategories);
+
   const categories =
     apiCategories.length > 0
       ? apiCategories.map((category) => ({
