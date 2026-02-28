@@ -132,6 +132,9 @@ Use `workspace:*` or `workspace:^` protocol for internal package dependencies in
 
 <!-- ================================== tech ========================================================== -->
 
+## Skills 
+AI coding rules or Skills available in  `.agents\skills` folder, each skills have multiple file or folder and `.md` about specific skills for AI Agents
+
 ## Tech Stack
 
 - **Frontend**: Next.js 16 (App Router), React 19, TypeScript 5.9
