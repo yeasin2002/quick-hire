@@ -1,4 +1,7 @@
 import { randomUUID } from "node:crypto";
+import { and, desc, eq, ilike, or, sql } from "drizzle-orm";
+import { db } from "@/lib/db";
+import { jobApplication, jobCategory, jobPosting } from "@/lib/db/schema/job-board";
 
 export const CATEGORY_TITLES = [
   "Design",
@@ -45,61 +48,88 @@ export type Application = {
 type CreateJobInput = Omit<Job, "created_at" | "id">;
 type CreateApplicationInput = Omit<Application, "created_at" | "id">;
 
-const categoriesStore: Category[] = [
+type JobFilters = {
+  category: string;
+  location: string;
+  search: string;
+};
+
+const categorySeedData: Array<{
+  available_jobs: number;
+  id: string;
+  image_url: string;
+  title: JobCategory;
+}> = [
   {
+    id: "category_design",
     title: "Design",
     available_jobs: 235,
-    image_url: "https://ik.imagekit.io/quickhire/categories/design.png",
+    image_url: "/assets/categories/Icon.png",
   },
   {
+    id: "category_sales",
     title: "Sales",
     available_jobs: 756,
-    image_url: "https://ik.imagekit.io/quickhire/categories/sales.png",
+    image_url: "/assets/categories/Icon-1.png",
   },
   {
+    id: "category_marketing",
     title: "Marketing",
     available_jobs: 140,
-    image_url: "https://ik.imagekit.io/quickhire/categories/marketing.png",
+    image_url: "/assets/categories/Icon-2.png",
   },
   {
+    id: "category_finance",
     title: "Finance",
     available_jobs: 325,
-    image_url: "https://ik.imagekit.io/quickhire/categories/finance.png",
+    image_url: "/assets/categories/Icon-3.png",
   },
   {
+    id: "category_technology",
     title: "Technology",
     available_jobs: 436,
-    image_url: "https://ik.imagekit.io/quickhire/categories/technology.png",
+    image_url: "/assets/categories/Icon-4.png",
   },
   {
+    id: "category_engineering",
     title: "Engineering",
     available_jobs: 542,
-    image_url: "https://ik.imagekit.io/quickhire/categories/engineering.png",
+    image_url: "/assets/categories/Icon-5.png",
   },
   {
+    id: "category_business",
     title: "Business",
     available_jobs: 211,
-    image_url: "https://ik.imagekit.io/quickhire/categories/business.png",
+    image_url: "/assets/categories/Icon-6.png",
   },
   {
+    id: "category_human_resource",
     title: "Human Resource",
     available_jobs: 346,
-    image_url: "https://ik.imagekit.io/quickhire/categories/human-resource.png",
+    image_url: "/assets/categories/Icon-7.png",
   },
 ];
 
-const jobsStore: Job[] = [
+const jobSeedData: Array<{
+  category: JobCategory;
+  company: string;
+  description: string;
+  employment_type: JobEmploymentType;
+  id: string;
+  image_url: string;
+  location: string;
+  title: string;
+}> = [
   {
     id: "job_01",
     title: "Email Marketing",
     company: "Revolut",
     location: "Madrid, Spain",
     category: "Marketing",
-    image_url: "https://ik.imagekit.io/quickhire/companies/revolut.png",
+    image_url: "/assets/author-companies/R.png",
     employment_type: "Full Time",
     description:
-      "Revolut is looking for Email Marketing to help team market products.",
-    created_at: new Date().toISOString(),
+      "Revolut is looking for Email Marketing to help team market products...",
   },
   {
     id: "job_02",
@@ -107,11 +137,10 @@ const jobsStore: Job[] = [
     company: "Dropbox",
     location: "San Fransisco, US",
     category: "Design",
-    image_url: "https://ik.imagekit.io/quickhire/companies/dropbox.png",
+    image_url: "/assets/author-companies/company-logo.png",
     employment_type: "Full Time",
     description:
-      "Dropbox is looking for Brand Designer to help the team think creatively.",
-    created_at: new Date().toISOString(),
+      "Dropbox is looking for Brand Designer to help the team think creatively...",
   },
   {
     id: "job_03",
@@ -119,10 +148,10 @@ const jobsStore: Job[] = [
     company: "Pitch",
     location: "Berlin, Germany",
     category: "Marketing",
-    image_url: "https://ik.imagekit.io/quickhire/companies/pitch.png",
+    image_url: "/assets/author-companies/company-logo-1.png",
     employment_type: "Full Time",
-    description: "Pitch is looking for Customer Manager to join marketing team.",
-    created_at: new Date().toISOString(),
+    description:
+      "Pitch is looking for Customer Manager to join marketing team...",
   },
   {
     id: "job_04",
@@ -130,11 +159,10 @@ const jobsStore: Job[] = [
     company: "Blinklist",
     location: "Granada, Spain",
     category: "Design",
-    image_url: "https://ik.imagekit.io/quickhire/companies/blinklist.png",
+    image_url: "/assets/author-companies/company-logo-2.png",
     employment_type: "Full Time",
     description:
-      "Blinklist is looking for Visual Designer to help team design assets.",
-    created_at: new Date().toISOString(),
+      "Blinklist is looking for Visual Designer to help team design assets...",
   },
   {
     id: "job_05",
@@ -142,11 +170,10 @@ const jobsStore: Job[] = [
     company: "ClassPass",
     location: "Manchester, UK",
     category: "Design",
-    image_url: "https://ik.imagekit.io/quickhire/companies/classpass.png",
+    image_url: "/assets/author-companies/company-logo-3.png",
     employment_type: "Full Time",
     description:
-      "ClassPass is looking for Product Designer to help us build better UX.",
-    created_at: new Date().toISOString(),
+      "ClassPass is looking for Product Designer to help us build better UX...",
   },
   {
     id: "job_06",
@@ -154,11 +181,10 @@ const jobsStore: Job[] = [
     company: "Canva",
     location: "Ontario, Canada",
     category: "Design",
-    image_url: "https://ik.imagekit.io/quickhire/companies/canva.png",
+    image_url: "/assets/author-companies/company-logo-4.png",
     employment_type: "Full Time",
     description:
-      "Canva is looking for Lead Engineer to help develop new experiences.",
-    created_at: new Date().toISOString(),
+      "Canva is looking for Lead Engineer to help develop new experiences...",
   },
   {
     id: "job_07",
@@ -166,10 +192,9 @@ const jobsStore: Job[] = [
     company: "GoDaddy",
     location: "Marseille, France",
     category: "Marketing",
-    image_url: "https://ik.imagekit.io/quickhire/companies/godaddy.png",
+    image_url: "/assets/author-companies/company-logo-5.png",
     employment_type: "Full Time",
-    description: "GoDaddy is looking for Brand Strategist to join the team.",
-    created_at: new Date().toISOString(),
+    description: "GoDaddy is looking for Brand Strategist to join the team...",
   },
   {
     id: "job_08",
@@ -177,82 +202,233 @@ const jobsStore: Job[] = [
     company: "Twitter",
     location: "San Diego, US",
     category: "Technology",
-    image_url: "https://ik.imagekit.io/quickhire/companies/twitter.png",
+    image_url: "/assets/author-companies/company-logo-6.png",
     employment_type: "Full Time",
-    description: "Twitter is looking for Data Analyst to help team design.",
-    created_at: new Date().toISOString(),
+    description: "Twitter is looking for Data Analyst to help team design...",
   },
 ];
 
-const applicationsStore: Application[] = [];
+let isSeeded = false;
 
-export const getCategories = (): Category[] => {
-  return categoriesStore;
+const toIsoString = (value: Date | string): string => {
+  return value instanceof Date ? value.toISOString() : new Date(value).toISOString();
 };
 
-export const getJobs = (): Job[] => {
-  return jobsStore;
-};
-
-export const getJobById = (id: string): Job | undefined => {
-  return jobsStore.find((job) => job.id === id);
-};
-
-export const createJob = (payload: CreateJobInput): Job => {
-  const createdJob: Job = {
-    id: `job_${randomUUID()}`,
-    created_at: new Date().toISOString(),
-    ...payload,
+const mapCategory = (row: typeof jobCategory.$inferSelect): Category => {
+  return {
+    title: row.title as JobCategory,
+    available_jobs: row.availableJobs,
+    image_url: row.imageUrl,
   };
-
-  jobsStore.unshift(createdJob);
-
-  const category = categoriesStore.find((item) => item.title === payload.category);
-  if (category) {
-    category.available_jobs += 1;
-  }
-
-  return createdJob;
 };
 
-export const deleteJob = (id: string): Job | undefined => {
-  const index = jobsStore.findIndex((job) => job.id === id);
-  if (index === -1) {
+const mapJob = (row: typeof jobPosting.$inferSelect): Job => {
+  return {
+    id: row.id,
+    title: row.title,
+    company: row.company,
+    location: row.location,
+    category: row.category as JobCategory,
+    image_url: row.imageUrl,
+    employment_type: row.employmentType as JobEmploymentType,
+    description: row.description,
+    created_at: toIsoString(row.createdAt),
+  };
+};
+
+const mapApplication = (row: typeof jobApplication.$inferSelect): Application => {
+  return {
+    id: row.id,
+    job_id: row.jobId,
+    name: row.name,
+    email: row.email,
+    resume_link: row.resumeLink,
+    cover_note: row.coverNote,
+    created_at: toIsoString(row.createdAt),
+  };
+};
+
+export const initializeJobBoardData = async (): Promise<void> => {
+  if (isSeeded) {
+    return;
+  }
+
+  const [categoryCountRow] = await db
+    .select({ count: sql<number>`count(*)::int` })
+    .from(jobCategory);
+
+  if ((categoryCountRow?.count ?? 0) === 0) {
+    await db.insert(jobCategory).values(
+      categorySeedData.map((item) => ({
+        id: item.id,
+        title: item.title,
+        imageUrl: item.image_url,
+        availableJobs: item.available_jobs,
+      })),
+    );
+  }
+
+  const [jobCountRow] = await db
+    .select({ count: sql<number>`count(*)::int` })
+    .from(jobPosting);
+
+  if ((jobCountRow?.count ?? 0) === 0) {
+    await db.insert(jobPosting).values(
+      jobSeedData.map((item) => ({
+        id: item.id,
+        title: item.title,
+        company: item.company,
+        location: item.location,
+        category: item.category,
+        imageUrl: item.image_url,
+        employmentType: item.employment_type,
+        description: item.description,
+      })),
+    );
+  }
+
+  isSeeded = true;
+};
+
+export const getCategories = async (): Promise<Category[]> => {
+  await initializeJobBoardData();
+  const rows = await db.select().from(jobCategory).orderBy(jobCategory.title);
+  return rows.map(mapCategory);
+};
+
+export const getJobs = async ({
+  search,
+  category,
+  location,
+}: JobFilters): Promise<Job[]> => {
+  await initializeJobBoardData();
+
+  const normalizedSearch = search.trim().toLowerCase();
+  const normalizedCategory = category.trim().toLowerCase();
+  const normalizedLocation = location.trim().toLowerCase();
+
+  const conditions = [];
+
+  if (normalizedSearch) {
+    conditions.push(
+      or(
+        ilike(jobPosting.title, `%${normalizedSearch}%`),
+        ilike(jobPosting.company, `%${normalizedSearch}%`),
+        ilike(jobPosting.description, `%${normalizedSearch}%`),
+        ilike(jobPosting.location, `%${normalizedSearch}%`),
+      ),
+    );
+  }
+
+  if (normalizedCategory) {
+    conditions.push(ilike(jobPosting.category, normalizedCategory));
+  }
+
+  if (normalizedLocation) {
+    conditions.push(ilike(jobPosting.location, `%${normalizedLocation}%`));
+  }
+
+  const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+
+  const rows = await db
+    .select()
+    .from(jobPosting)
+    .where(whereClause)
+    .orderBy(desc(jobPosting.createdAt));
+
+  return rows.map(mapJob);
+};
+
+export const getJobById = async (id: string): Promise<Job | undefined> => {
+  await initializeJobBoardData();
+  const [row] = await db.select().from(jobPosting).where(eq(jobPosting.id, id)).limit(1);
+  return row ? mapJob(row) : undefined;
+};
+
+export const createJob = async (payload: CreateJobInput): Promise<Job> => {
+  await initializeJobBoardData();
+
+  const id = `job_${randomUUID()}`;
+  await db.insert(jobPosting).values({
+    id,
+    title: payload.title,
+    company: payload.company,
+    location: payload.location,
+    category: payload.category,
+    imageUrl: payload.image_url,
+    employmentType: payload.employment_type,
+    description: payload.description,
+  });
+
+  await db
+    .update(jobCategory)
+    .set({
+      availableJobs: sql`GREATEST(${jobCategory.availableJobs} + 1, 0)`,
+    })
+    .where(eq(jobCategory.title, payload.category));
+
+  const [createdRow] = await db
+    .select()
+    .from(jobPosting)
+    .where(eq(jobPosting.id, id))
+    .limit(1);
+
+  return mapJob(createdRow!);
+};
+
+export const deleteJob = async (id: string): Promise<Job | undefined> => {
+  await initializeJobBoardData();
+
+  const [existing] = await db
+    .select()
+    .from(jobPosting)
+    .where(eq(jobPosting.id, id))
+    .limit(1);
+
+  if (!existing) {
     return undefined;
   }
 
-  const [deletedJob] = jobsStore.splice(index, 1);
-  if (!deletedJob) {
-    return undefined;
-  }
+  await db.delete(jobPosting).where(eq(jobPosting.id, id));
 
-  const category = categoriesStore.find((item) => item.title === deletedJob.category);
-  if (category && category.available_jobs > 0) {
-    category.available_jobs -= 1;
-  }
+  await db
+    .update(jobCategory)
+    .set({
+      availableJobs: sql`GREATEST(${jobCategory.availableJobs} - 1, 0)`,
+    })
+    .where(eq(jobCategory.title, existing.category));
 
-  for (let i = applicationsStore.length - 1; i >= 0; i -= 1) {
-    if (applicationsStore[i]?.job_id === id) {
-      applicationsStore.splice(i, 1);
-    }
-  }
-
-  return deletedJob;
+  return mapJob(existing);
 };
 
-export const createApplication = (
+export const createApplication = async (
   payload: CreateApplicationInput,
-): Application => {
-  const application: Application = {
-    id: `application_${randomUUID()}`,
-    created_at: new Date().toISOString(),
-    ...payload,
-  };
+): Promise<Application> => {
+  await initializeJobBoardData();
 
-  applicationsStore.unshift(application);
-  return application;
+  const id = `application_${randomUUID()}`;
+
+  await db.insert(jobApplication).values({
+    id,
+    jobId: payload.job_id,
+    name: payload.name,
+    email: payload.email,
+    resumeLink: payload.resume_link,
+    coverNote: payload.cover_note,
+  });
+
+  const [createdRow] = await db
+    .select()
+    .from(jobApplication)
+    .where(eq(jobApplication.id, id))
+    .limit(1);
+
+  return mapApplication(createdRow!);
 };
 
-export const getApplications = (): Application[] => {
-  return applicationsStore;
+export const getApplications = async (): Promise<Application[]> => {
+  await initializeJobBoardData();
+  const rows = await db.select().from(jobApplication).orderBy(desc(jobApplication.createdAt));
+  return rows.map(mapApplication);
 };
+
