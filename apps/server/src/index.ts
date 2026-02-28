@@ -1,8 +1,8 @@
-import { auth } from "@workspace/auth";
-import { env } from "@workspace/env/server";
 import { toNodeHandler } from "better-auth/node";
 import cors from "cors";
 import express from "express";
+import { auth } from "@/lib/auth";
+import { env } from "@/lib/env";
 
 const app = express();
 

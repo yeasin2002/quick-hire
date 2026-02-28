@@ -1,14 +1,13 @@
-import { db } from "@workspace/db";
-import * as schema from "@workspace/db/schema/auth";
-import { env } from "@workspace/env/server";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { db } from "@/lib/db";
+import * as schema from "@/lib/db/schema/auth";
+import { env } from "@/lib/env";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: "pg",
-
-    schema: schema,
+    schema,
   }),
   trustedOrigins: [env.CORS_ORIGIN],
   emailAndPassword: {
@@ -23,3 +22,4 @@ export const auth = betterAuth({
   },
   plugins: [],
 });
+
