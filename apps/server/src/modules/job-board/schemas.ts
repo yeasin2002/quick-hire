@@ -6,6 +6,7 @@ export const createJobSchema = z.object({
   company: z.string().trim().min(1),
   location: z.string().trim().min(1),
   category: z.enum(CATEGORY_TITLES),
+  image_url: z.url(),
   description: z.string().trim().min(10),
   employment_type: z.literal("Full Time").default("Full Time"),
 });
@@ -17,4 +18,3 @@ export const createApplicationSchema = z.object({
   resume_link: z.url(),
   cover_note: z.string().trim().min(10),
 });
-

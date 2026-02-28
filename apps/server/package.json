@@ -14,6 +14,7 @@
     "start": "node dist/index.mjs"
   },
   "dependencies": {
+    "@imagekit/nodejs": "^7.3.0",
     "@neondatabase/serverless": "^1.0.2",
     "@t3-oss/env-core": "^0.13.1",
     "better-auth": "catalog:",
@@ -21,12 +22,14 @@
     "dotenv": "catalog:",
     "drizzle-orm": "^0.45.1",
     "express": "^5.1.0",
+    "multer": "^2.0.2",
     "zod": "catalog:"
   },
   "devDependencies": {
     "@workspace/config": "workspace:*",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.1",
+    "@types/multer": "^2.0.0",
     "@types/node": "^22.13.14",
     "drizzle-kit": "^0.31.8",
     "tsdown": "^0.16.5",

@@ -16,6 +16,7 @@ export type JobEmploymentType = "Full Time";
 
 export type Category = {
   available_jobs: number;
+  image_url: string;
   title: JobCategory;
 };
 
@@ -26,6 +27,7 @@ export type Job = {
   description: string;
   employment_type: JobEmploymentType;
   id: string;
+  image_url: string;
   location: string;
   title: string;
 };
@@ -44,14 +46,46 @@ type CreateJobInput = Omit<Job, "created_at" | "id">;
 type CreateApplicationInput = Omit<Application, "created_at" | "id">;
 
 const categoriesStore: Category[] = [
-  { title: "Design", available_jobs: 235 },
-  { title: "Sales", available_jobs: 756 },
-  { title: "Marketing", available_jobs: 140 },
-  { title: "Finance", available_jobs: 325 },
-  { title: "Technology", available_jobs: 436 },
-  { title: "Engineering", available_jobs: 542 },
-  { title: "Business", available_jobs: 211 },
-  { title: "Human Resource", available_jobs: 346 },
+  {
+    title: "Design",
+    available_jobs: 235,
+    image_url: "https://ik.imagekit.io/quickhire/categories/design.png",
+  },
+  {
+    title: "Sales",
+    available_jobs: 756,
+    image_url: "https://ik.imagekit.io/quickhire/categories/sales.png",
+  },
+  {
+    title: "Marketing",
+    available_jobs: 140,
+    image_url: "https://ik.imagekit.io/quickhire/categories/marketing.png",
+  },
+  {
+    title: "Finance",
+    available_jobs: 325,
+    image_url: "https://ik.imagekit.io/quickhire/categories/finance.png",
+  },
+  {
+    title: "Technology",
+    available_jobs: 436,
+    image_url: "https://ik.imagekit.io/quickhire/categories/technology.png",
+  },
+  {
+    title: "Engineering",
+    available_jobs: 542,
+    image_url: "https://ik.imagekit.io/quickhire/categories/engineering.png",
+  },
+  {
+    title: "Business",
+    available_jobs: 211,
+    image_url: "https://ik.imagekit.io/quickhire/categories/business.png",
+  },
+  {
+    title: "Human Resource",
+    available_jobs: 346,
+    image_url: "https://ik.imagekit.io/quickhire/categories/human-resource.png",
+  },
 ];
 
 const jobsStore: Job[] = [
@@ -61,6 +95,7 @@ const jobsStore: Job[] = [
     company: "Revolut",
     location: "Madrid, Spain",
     category: "Marketing",
+    image_url: "https://ik.imagekit.io/quickhire/companies/revolut.png",
     employment_type: "Full Time",
     description:
       "Revolut is looking for Email Marketing to help team market products.",
@@ -72,6 +107,7 @@ const jobsStore: Job[] = [
     company: "Dropbox",
     location: "San Fransisco, US",
     category: "Design",
+    image_url: "https://ik.imagekit.io/quickhire/companies/dropbox.png",
     employment_type: "Full Time",
     description:
       "Dropbox is looking for Brand Designer to help the team think creatively.",
@@ -83,6 +119,7 @@ const jobsStore: Job[] = [
     company: "Pitch",
     location: "Berlin, Germany",
     category: "Marketing",
+    image_url: "https://ik.imagekit.io/quickhire/companies/pitch.png",
     employment_type: "Full Time",
     description: "Pitch is looking for Customer Manager to join marketing team.",
     created_at: new Date().toISOString(),
@@ -93,6 +130,7 @@ const jobsStore: Job[] = [
     company: "Blinklist",
     location: "Granada, Spain",
     category: "Design",
+    image_url: "https://ik.imagekit.io/quickhire/companies/blinklist.png",
     employment_type: "Full Time",
     description:
       "Blinklist is looking for Visual Designer to help team design assets.",
@@ -104,6 +142,7 @@ const jobsStore: Job[] = [
     company: "ClassPass",
     location: "Manchester, UK",
     category: "Design",
+    image_url: "https://ik.imagekit.io/quickhire/companies/classpass.png",
     employment_type: "Full Time",
     description:
       "ClassPass is looking for Product Designer to help us build better UX.",
@@ -115,6 +154,7 @@ const jobsStore: Job[] = [
     company: "Canva",
     location: "Ontario, Canada",
     category: "Design",
+    image_url: "https://ik.imagekit.io/quickhire/companies/canva.png",
     employment_type: "Full Time",
     description:
       "Canva is looking for Lead Engineer to help develop new experiences.",
@@ -126,6 +166,7 @@ const jobsStore: Job[] = [
     company: "GoDaddy",
     location: "Marseille, France",
     category: "Marketing",
+    image_url: "https://ik.imagekit.io/quickhire/companies/godaddy.png",
     employment_type: "Full Time",
     description: "GoDaddy is looking for Brand Strategist to join the team.",
     created_at: new Date().toISOString(),
@@ -136,6 +177,7 @@ const jobsStore: Job[] = [
     company: "Twitter",
     location: "San Diego, US",
     category: "Technology",
+    image_url: "https://ik.imagekit.io/quickhire/companies/twitter.png",
     employment_type: "Full Time",
     description: "Twitter is looking for Data Analyst to help team design.",
     created_at: new Date().toISOString(),
@@ -214,4 +256,3 @@ export const createApplication = (
 export const getApplications = (): Application[] => {
   return applicationsStore;
 };
-
