@@ -47,6 +47,8 @@
 
 @theme inline {
   --font-red-hat: var(--font-red-hat);
+  --font-epilogue: var(--font-epilogue);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
