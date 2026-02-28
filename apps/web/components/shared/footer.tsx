@@ -1,7 +1,6 @@
-import logo from "@/assets/logo.svg";
 import { Dribbble, Facebook, Instagram, Linkedin, Twitter } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
+import { Logo } from "./logo";
 
 const aboutLinks = [
   "Companies",
@@ -20,13 +19,13 @@ const socialLinks = [
   { label: "Twitter", href: "#", Icon: Twitter },
 ];
 
-export default function Footer() {
+export function Footer() {
   return (
-    <footer className="bg-[#1F2638] text-[#EFF2F8]">
+    <footer className="bg-[#202430] text-[#EFF2F8]">
       <div className="mx-auto w-full max-w-435 px-6 pb-12 pt-20 sm:px-10 lg:px-16 xl:px-24 xl:pb-14 xl:pt-24">
-        <div className="grid gap-14 md:grid-cols-2 xl:grid-cols-[minmax(0,1.8fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_minmax(0,1.35fr)] xl:gap-[70px]">
+        <div className="grid gap-14 md:grid-cols-2 xl:grid-cols-[minmax(0,1.8fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_minmax(0,1.35fr)] xl:gap-17.5">
           <div>
-            <Image src={logo} alt="Logo" />
+            <Logo />
 
             <p className="mt-9 max-w-132 text-[18px] leading-[1.55] text-[#C5CAD7]">
               Great platform for the job seeker that passionate about startups.
@@ -74,12 +73,12 @@ export default function Footer() {
             <h2 className="text-[20px] font-semibold tracking-[-0.01em] text-[#F6F7FB]">
               Get job notifications
             </h2>
-            <p className="max-w-[27rem] text-[18px] leading-[1.55] text-[#C5CAD7]">
+            <p className="max-w-108 text-[18px] leading-[1.55] text-[#C5CAD7]">
               The latest job news, articles, sent to your inbox weekly.
             </p>
 
             <form
-              className="flex w-full max-w-[560px] flex-col gap-3 sm:flex-row"
+              className="flex w-full max-w-140 flex-col gap-3 sm:flex-row"
               action="#"
               method="post"
             >
@@ -94,11 +93,11 @@ export default function Footer() {
                 autoComplete="email"
                 spellCheck={false}
                 required
-                className="h-[72px] min-w-0 flex-1 border border-[#CFD3DB] bg-[#E0E0E0] px-6 text-[18px] text-[#8B90A0] outline-none transition-colors duration-200 focus-visible:border-[#4D4DED] focus-visible:ring-2 focus-visible:ring-[#4D4DED] motion-reduce:transition-none"
+                className="h-18 min-w-0 flex-1 border border-[#CFD3DB] bg-[#E0E0E0] px-6 text-[18px] text-[#8B90A0] outline-none transition-colors duration-200 focus-visible:border-[#4D4DED] focus-visible:ring-2 focus-visible:ring-[#4D4DED] motion-reduce:transition-none"
               />
               <button
                 type="submit"
-                className="h-[72px] touch-manipulation bg-[#4D4DED] px-9 text-[18px] font-semibold text-[#F6F7FB] transition-colors duration-200 hover:bg-[#5E5EF5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#9EA5FF] motion-reduce:transition-none"
+                className="h-18 touch-manipulation bg-[#4D4DED] px-9 text-[18px] font-semibold text-[#F6F7FB] transition-colors duration-200 hover:bg-[#5E5EF5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#9EA5FF] motion-reduce:transition-none"
               >
                 Subscribe
               </button>
@@ -129,29 +128,5 @@ export default function Footer() {
         </div>
       </div>
     </footer>
-  );
-}
-
-function LogoMark() {
-  return (
-    <svg
-      aria-hidden="true"
-      width="54"
-      height="54"
-      viewBox="0 0 54 54"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className="shrink-0"
-    >
-      <circle cx="27" cy="27" r="27" fill="#4D4DED" />
-      <circle cx="27" cy="21" r="8" fill="#F6F7FB" />
-      <path
-        d="M14.5 31.5C17 37.5 21.5 41.5 27.5 41.5C33.5 41.5 38 37.5 40.5 31.5"
-        stroke="#F6F7FB"
-        strokeWidth="5"
-        strokeLinecap="round"
-      />
-      <circle cx="34.2" cy="13.8" r="3.2" fill="#D9DEEE" />
-    </svg>
   );
 }
