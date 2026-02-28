@@ -1,5 +1,6 @@
 import {
   CompaniesTrustList,
+  CtaBanner,
   ExploreByCategory,
   FeaturedJobs,
   HeroSection,
@@ -12,6 +13,7 @@ export default function Page() {
       <HeroSection />
       <CompaniesTrustList />
       <ExploreByCategory />
+      <CtaBanner />
       <FeaturedJobs />
       <LatestJobsOpen />
     </div>

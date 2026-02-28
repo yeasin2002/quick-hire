@@ -32,7 +32,7 @@ export const LatestJobsOpen = () => {
             {latestJobsOpen.map((job) => (
               <div
                 key={`${job.company}-${job.title}-${job.location}`}
-                className="w-[350px] max-w-[86vw] shrink-0 snap-start"
+                className="w-87.5 max-w-[86vw] shrink-0 snap-start"
               >
                 <LatestJobsOpenCard
                   logo={job.logo}
