@@ -137,84 +137,6 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
-  packages/auth:
-    dependencies:
-      '@workspace/db':
-        specifier: workspace:*
-        version: link:../db
-      '@workspace/env':
-        specifier: workspace:*
-        version: link:../env
-      better-auth:
-        specifier: 'catalog:'
-        version: 1.4.20(drizzle-kit@0.31.9)(drizzle-orm@0.45.1(@neondatabase/serverless@1.0.2)(@types/pg@8.16.0)(kysely@0.28.11))(next@16.1.6(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      dotenv:
-        specifier: 'catalog:'
-        version: 17.3.1
-      zod:
-        specifier: 'catalog:'
-        version: 4.3.6
-    devDependencies:
-      '@workspace/config':
-        specifier: workspace:*
-        version: link:../../tooling/config
-      typescript:
-        specifier: 'catalog:'
-        version: 5.9.3
-
-  packages/db:
-    dependencies:
-      '@neondatabase/serverless':
-        specifier: ^1.0.2
-        version: 1.0.2
-      '@workspace/env':
-        specifier: workspace:*
-        version: link:../env
-      dotenv:
-        specifier: 'catalog:'
-        version: 17.3.1
-      drizzle-orm:
-        specifier: ^0.45.1
-        version: 0.45.1(@neondatabase/serverless@1.0.2)(@types/pg@8.16.0)(kysely@0.28.11)
-      zod:
-        specifier: 'catalog:'
-        version: 4.3.6
-    devDependencies:
-      '@workspace/config':
-        specifier: workspace:*
-        version: link:../../tooling/config
-      drizzle-kit:
-        specifier: ^0.31.8
-        version: 0.31.9
-      typescript:
-        specifier: 'catalog:'
-        version: 5.9.3
-
-  packages/env:
-    dependencies:
-      '@t3-oss/env-core':
-        specifier: ^0.13.1
-        version: 0.13.10(typescript@5.9.3)(zod@4.3.6)
-      '@t3-oss/env-nextjs':
-        specifier: ^0.13.1
-        version: 0.13.10(typescript@5.9.3)(zod@4.3.6)
-      dotenv:
-        specifier: 'catalog:'
-        version: 17.3.1
-      zod:
-        specifier: 'catalog:'
-        version: 4.3.6
-    devDependencies:
-      '@types/node':
-        specifier: ^22.13.14
-        version: 22.19.13
-      '@workspace/config':
-        specifier: workspace:*
-        version: link:../../tooling/config
-      typescript:
-        specifier: 'catalog:'
-        version: 5.9.3
-
   packages/ui:
     dependencies:
       class-variance-authority:
@@ -2203,23 +2125,6 @@ packages:
 
   '@t3-oss/env-core@0.13.10':
     resolution: {integrity: sha512-NNFfdlJ+HmPHkLi2HKy7nwuat9SIYOxei9K10lO2YlcSObDILY7mHZNSHsieIM3A0/5OOzw/P/b+yLvPdaG52g==}
-    peerDependencies:
-      arktype: ^2.1.0
-      typescript: '>=5.0.0'
-      valibot: ^1.0.0-beta.7 || ^1.0.0
-      zod: ^3.24.0 || ^4.0.0
-    peerDependenciesMeta:
-      arktype:
-        optional: true
-      typescript:
-        optional: true
-      valibot:
-        optional: true
-      zod:
-        optional: true
-
-  '@t3-oss/env-nextjs@0.13.10':
-    resolution: {integrity: sha512-JfSA2WXOnvcc/uMdp31paMsfbYhhdvLLRxlwvrnlPE9bwM/n0Z+Qb9xRv48nPpvfMhOrkrTYw1I5Yc06WIKBJQ==}
     peerDependencies:
       arktype: ^2.1.0
       typescript: '>=5.0.0'
@@ -6206,13 +6111,6 @@ snapshots:
       tslib: 2.8.1
 
   '@t3-oss/env-core@0.13.10(typescript@5.9.3)(zod@4.3.6)':
-    optionalDependencies:
-      typescript: 5.9.3
-      zod: 4.3.6
-
-  '@t3-oss/env-nextjs@0.13.10(typescript@5.9.3)(zod@4.3.6)':
-    dependencies:
-      '@t3-oss/env-core': 0.13.10(typescript@5.9.3)(zod@4.3.6)
     optionalDependencies:
       typescript: 5.9.3
       zod: 4.3.6
