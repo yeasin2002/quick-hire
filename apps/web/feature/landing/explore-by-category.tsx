@@ -1,9 +1,25 @@
-import { categories } from "@/data";
+import { categories as fallbackCategories } from "@/data/categories.data";
+import { resolveCategoryIcon } from "@/lib/job-board-assets";
+import { getCategoriesApi } from "@/lib/job-board-api";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { CategoryCard } from "./category-card";
 
-export const ExploreByCategory = () => {
+export const ExploreByCategory = async () => {
+  const apiCategories = await getCategoriesApi();
+  const categories =
+    apiCategories.length > 0
+      ? apiCategories.map((category) => ({
+          availableJobs: category.available_jobs,
+          icon: resolveCategoryIcon(category.image_url, category.title),
+          title: category.title,
+        }))
+      : fallbackCategories.map((category) => ({
+          availableJobs: category.available_jobs,
+          icon: category.icon,
+          title: category.title,
+        }));
+
   return (
     <section className="landing-section-container">
       <h2 className="landing-section-heading">
@@ -17,7 +33,7 @@ export const ExploreByCategory = () => {
               key={item.title}
               icon={item.icon}
               title={item.title}
-              availableJobs={item.available_jobs}
+              availableJobs={item.availableJobs}
             />
           );
         })}

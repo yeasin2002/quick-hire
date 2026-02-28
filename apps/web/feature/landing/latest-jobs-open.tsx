@@ -1,9 +1,60 @@
-import { latestJobsOpen } from "@/data";
+import { latestJobsOpen as fallbackLatestJobsOpen } from "@/data";
+import { getJobsApi } from "@/lib/job-board-api";
+import { resolveCompanyLogo } from "@/lib/job-board-assets";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { LatestJobsOpenCard } from "./latest-jobs-open-card";
 
-export const LatestJobsOpen = () => {
+const splitLocation = (
+  value: string,
+): { country: string; location: string } => {
+  const [location, ...countryParts] = value
+    .split(",")
+    .map((part) => part.trim())
+    .filter(Boolean);
+
+  if (!location) {
+    return {
+      country: "Worldwide",
+      location: "Remote",
+    };
+  }
+
+  return {
+    country: countryParts.join(", ") || "Worldwide",
+    location,
+  };
+};
+
+export const LatestJobsOpen = async () => {
+  const apiJobs = await getJobsApi();
+  const latestJobsOpen =
+    apiJobs.length > 0
+      ? apiJobs.slice(0, 8).map((job) => {
+          const { country, location } = splitLocation(job.location);
+
+          return {
+            company: job.company,
+            country,
+            employmentType: "Full-Time" as const,
+            key: job.id,
+            location,
+            logo: resolveCompanyLogo(job.image_url),
+            tags: ["Marketing", "Design"] as ("Marketing" | "Design")[],
+            title: job.title,
+          };
+        })
+      : fallbackLatestJobsOpen.map((job, index) => ({
+          company: job.company,
+          country: job.country,
+          employmentType: job.employment_type,
+          key: `${job.company}-${job.title}-${index}`,
+          location: job.location,
+          logo: job.logo,
+          tags: job.tags,
+          title: job.title,
+        }));
+
   return (
     <section className="relative overflow-hidden bg-[#F8F8FD]">
       <SectionLines />
@@ -31,7 +82,7 @@ export const LatestJobsOpen = () => {
           <div className="flex snap-x snap-mandatory gap-4">
             {latestJobsOpen.map((job) => (
               <div
-                key={`${job.company}-${job.title}-${job.location}`}
+                key={job.key}
                 className="w-87.5 max-w-[86vw] shrink-0 snap-start"
               >
                 <LatestJobsOpenCard
@@ -40,7 +91,7 @@ export const LatestJobsOpen = () => {
                   company={job.company}
                   location={job.location}
                   country={job.country}
-                  employmentType={job.employment_type}
+                  employmentType={job.employmentType}
                   tags={job.tags}
                 />
               </div>
@@ -51,13 +102,13 @@ export const LatestJobsOpen = () => {
         <div className="mt-8 hidden grid-cols-2 gap-4 lg:grid xl:gap-5">
           {latestJobsOpen.map((job) => (
             <LatestJobsOpenCard
-              key={`${job.company}-${job.title}-${job.location}`}
+              key={job.key}
               logo={job.logo}
               title={job.title}
               company={job.company}
               location={job.location}
               country={job.country}
-              employmentType={job.employment_type}
+              employmentType={job.employmentType}
               tags={job.tags}
             />
           ))}
