@@ -1,12 +1,11 @@
-import { toNodeHandler } from "better-auth/node";
-import cors from "cors";
-import express from "express";
-import { auth } from "@/lib/auth";
 import { openApiDocument, renderSwaggerUi } from "@/docs/openapi";
 import { env } from "@/lib/env";
 import { errorHandler, notFoundHandler } from "@/lib/http/errors";
 import { jobBoardRouter } from "@/modules/job-board/router";
 import { uploadsRouter } from "@/modules/uploads/router";
+import cors from "cors";
+import express from "express";
+import morgan from "morgan";
 
 const app = express();
 
@@ -21,8 +20,8 @@ app.use(
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(morgan("dev"));
 
-app.all("/api/auth{/*path}", toNodeHandler(auth));
 app.use("/api", jobBoardRouter);
 app.use("/api", uploadsRouter);
 
