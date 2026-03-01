@@ -1,4 +1,3 @@
-import { baseImgUrl } from "@/lib/constant";
 import { ArrowRight } from "lucide-react";
 import type { StaticImageData } from "next/image";
 import Image from "next/image";
@@ -18,7 +17,7 @@ export const CategoryCard = ({
     <article className="group h-full border border-[#D6DDEB] bg-transparent px-4 py-5 md:p-8 xl:p-10">
       <div className="flex items-center gap-4 md:block">
         <Image
-          src={baseImgUrl + icon}
+          src={icon}
           alt=""
           aria-hidden="true"
           className="h-11 w-auto shrink-0 md:h-14"
