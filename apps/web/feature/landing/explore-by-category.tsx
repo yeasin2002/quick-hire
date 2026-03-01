@@ -5,7 +5,6 @@ import { CategoryCard } from "./category-card";
 
 export const ExploreByCategory = async () => {
   const apiCategories = await getCategoriesApi();
-  console.log("🚀 ~ ExploreByCategory ~ apiCategories:", apiCategories);
   const categories = apiCategories.length > 0 ? apiCategories : [];
 
   return (

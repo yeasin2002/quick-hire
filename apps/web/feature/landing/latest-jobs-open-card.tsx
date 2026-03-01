@@ -1,4 +1,5 @@
 import type { LatestJobTag } from "@/data";
+import { baseImgUrl } from "@/lib/constant";
 import Image from "next/image";
 
 type LatestJobsOpenCardProps = {
@@ -29,7 +30,7 @@ export const LatestJobsOpenCard = ({
     <article className="border border-[#ECEEF5] bg-white px-5 py-4 sm:px-7 sm:py-5">
       <div className="flex items-start gap-4 sm:gap-5">
         <Image
-          src={logo}
+          src={baseImgUrl + logo}
           alt={`${company} logo`}
           className="h-12 w-12 shrink-0 object-contain"
           width={200}

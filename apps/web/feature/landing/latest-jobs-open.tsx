@@ -7,17 +7,6 @@ export const LatestJobsOpen = async () => {
   const apiJobs = await getJobsApi();
   const latestJobsOpen = apiJobs.length > 0 ? apiJobs : [];
 
-  // return {
-  //           company: job.company,
-  //           country,
-  //           employmentType: "Full-Time" as const,
-  //           key: job.id,
-  //           location,
-  //           logo: resolveCompanyLogo(job.image_url),
-  //           tags: ["Marketing", "Design"] as ("Marketing" | "Design")[],
-  //           title: job.title,
-  //         };
-
   return (
     <section className="relative overflow-hidden bg-[#F8F8FD]">
       <SectionLines />

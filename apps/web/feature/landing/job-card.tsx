@@ -1,3 +1,4 @@
+import { baseImgUrl } from "@/lib/constant";
 import Image from "next/image";
 
 type JobTag = "Marketing" | "Design" | "Business" | "Technology";
@@ -73,7 +74,7 @@ export const JobCard = ({
     <article className="border border-[#D6DDEB] bg-transparent px-6 py-5 sm:px-8 sm:py-6">
       <div className="flex items-start justify-between gap-4">
         <Image
-          src={logo}
+          src={baseImgUrl + logo}
           alt={`${company} logo`}
           className="h-12 w-12 object-contain"
           width={100}
