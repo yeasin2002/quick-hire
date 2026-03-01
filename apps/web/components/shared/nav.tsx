@@ -37,7 +37,7 @@ export const Nav = () => {
 
         <div className="flex items-center gap-4 sm:gap-6">
           <Link
-            href="#"
+            href="/login"
             className="text-[20px] font-semibold leading-none text-[#4D4DED] transition-colors duration-200 hover:text-[#6363F3] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4D4DED] motion-reduce:transition-none"
           >
             Login
@@ -47,7 +47,7 @@ export const Nav = () => {
 
           <Link
             href="#"
-            className="inline-flex h-17.5 touch-manipulation items-center bg-[#4D4DED] px-9 text-[20px] font-semibold leading-none text-[#F7F9FE] transition-colors duration-200 hover:bg-[#6262F4] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A7ABFF] motion-reduce:transition-none"
+            className="rounded-xs inline-flex h-17.5 touch-manipulation items-center bg-[#4D4DED] px-9 text-[20px] font-semibold leading-none text-[#F7F9FE] transition-colors duration-200 hover:bg-[#6262F4] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A7ABFF] motion-reduce:transition-none"
           >
             Sign Up
           </Link>
@@ -63,7 +63,7 @@ export const Nav = () => {
             <li key={link.label}>
               <Link
                 href={link.href}
-                className="text-base font-semibold leading-none tracking-[-0.01em] transition-colors duration-200 hover:text-[#4D4DED] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4D4DED] motion-reduce:transition-none"
+                className=" text-base font-semibold leading-none tracking-[-0.01em] transition-colors duration-200 hover:text-[#4D4DED] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4D4DED] motion-reduce:transition-none"
               >
                 {link.label}
               </Link>

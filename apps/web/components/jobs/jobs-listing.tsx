@@ -145,7 +145,7 @@ export function JobsListing({ jobs }: JobsListingProps) {
               <SelectTrigger
                 id="jobs-category-filter"
                 aria-label="Filter by category"
-                className="h-11 w-full border-[#D6DDEB] bg-[#FCFCFF] text-[#25324B]"
+                className="min-h-11 w-full border-[#D6DDEB] bg-[#FCFCFF] text-[#25324B]"
               >
                 <SelectValue placeholder="All categories" />
               </SelectTrigger>
@@ -173,7 +173,7 @@ export function JobsListing({ jobs }: JobsListingProps) {
               <SelectTrigger
                 id="jobs-location-filter"
                 aria-label="Filter by location"
-                className="h-11 w-full border-[#D6DDEB] bg-[#FCFCFF] text-[#25324B]"
+                className="min-h-11  w-full border-[#D6DDEB] bg-[#FCFCFF] text-[#25324B]"
               >
                 <SelectValue placeholder="All locations" />
               </SelectTrigger>
