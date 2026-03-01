@@ -1,0 +1,11 @@
+services:
+  server:
+    container_name: quickhire-server
+    build:
+      context: ../..
+      dockerfile: apps/server/Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "4000:4000"
+    restart: unless-stopped
