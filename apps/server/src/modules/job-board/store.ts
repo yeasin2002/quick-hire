@@ -1,7 +1,7 @@
-import { randomUUID } from "node:crypto";
-import { and, desc, eq, ilike, or, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { jobApplication, jobCategory, jobPosting } from "@/lib/db/schema/job-board";
+import { jobApplication, jobCategory, jobPosting } from "@/lib/db/schema";
+import { and, desc, eq, ilike, or, sql } from "drizzle-orm";
+import { randomUUID } from "node:crypto";
 
 export const CATEGORY_TITLES = [
   "Design",
@@ -211,7 +211,9 @@ const jobSeedData: Array<{
 let isSeeded = false;
 
 const toIsoString = (value: Date | string): string => {
-  return value instanceof Date ? value.toISOString() : new Date(value).toISOString();
+  return value instanceof Date
+    ? value.toISOString()
+    : new Date(value).toISOString();
 };
 
 const mapCategory = (row: typeof jobCategory.$inferSelect): Category => {
@@ -236,7 +238,9 @@ const mapJob = (row: typeof jobPosting.$inferSelect): Job => {
   };
 };
 
-const mapApplication = (row: typeof jobApplication.$inferSelect): Application => {
+const mapApplication = (
+  row: typeof jobApplication.$inferSelect,
+): Application => {
   return {
     id: row.id,
     job_id: row.jobId,
@@ -341,7 +345,11 @@ export const getJobs = async ({
 
 export const getJobById = async (id: string): Promise<Job | undefined> => {
   await initializeJobBoardData();
-  const [row] = await db.select().from(jobPosting).where(eq(jobPosting.id, id)).limit(1);
+  const [row] = await db
+    .select()
+    .from(jobPosting)
+    .where(eq(jobPosting.id, id))
+    .limit(1);
   return row ? mapJob(row) : undefined;
 };
 
@@ -428,7 +436,9 @@ export const createApplication = async (
 
 export const getApplications = async (): Promise<Application[]> => {
   await initializeJobBoardData();
-  const rows = await db.select().from(jobApplication).orderBy(desc(jobApplication.createdAt));
+  const rows = await db
+    .select()
+    .from(jobApplication)
+    .orderBy(desc(jobApplication.createdAt));
   return rows.map(mapApplication);
 };
-

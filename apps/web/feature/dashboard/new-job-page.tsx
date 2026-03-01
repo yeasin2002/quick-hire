@@ -2,19 +2,32 @@ import { Button } from "@workspace/ui/components/button";
 import { Input } from "@workspace/ui/components/input";
 import { ArrowLeft, FileImage, Plus } from "lucide-react";
 import Link from "next/link";
+import type { AdminCategory } from "./admin-api";
+import { ADMIN_JOB_CATEGORIES } from "./admin-api";
+import { createJobAction } from "./actions";
 
-const categories = [
-  "Design",
-  "Sales",
-  "Marketing",
-  "Finance",
-  "Technology",
-  "Engineering",
-  "Business",
-  "Human Resource",
-] as const;
+type NewJobPageProps = {
+  categories: AdminCategory[];
+  error?: string;
+};
 
-export function NewJobPage() {
+const decodeMessage = (value?: string): string | undefined => {
+  if (!value) {
+    return undefined;
+  }
+
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+};
+
+export function NewJobPage({ categories, error }: NewJobPageProps) {
+  const options =
+    categories.length > 0 ? categories.map((category) => category.title) : [...ADMIN_JOB_CATEGORIES];
+  const safeError = decodeMessage(error);
+
   return (
     <section className="relative overflow-hidden bg-[#F8F8FD]">
       <div
@@ -40,19 +53,27 @@ export function NewJobPage() {
           </p>
         </header>
 
+        {safeError ? (
+          <p className="relative z-10 mt-5 rounded-xl border border-[#F7CFCF] bg-[#FFF1F1] px-4 py-3 text-[14px] font-medium text-[#C03F3F]">
+            {safeError}
+          </p>
+        ) : null}
+
         <div className="relative z-10 mt-7 grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
           <section className="rounded-2xl border border-[#D6DDEB] bg-white p-5 sm:p-6">
-            <form action="#" method="post" className="space-y-5">
+            <form action={createJobAction} className="space-y-5">
               <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
                 <FormControl
                   id="job-title"
                   label="Title"
+                  name="title"
                   placeholder="Senior Product Designer..."
                   required
                 />
                 <FormControl
                   id="job-company"
                   label="Company"
+                  name="company"
                   placeholder="QuickHire..."
                   required
                 />
@@ -62,6 +83,7 @@ export function NewJobPage() {
                 <FormControl
                   id="job-location"
                   label="Location"
+                  name="location"
                   placeholder="Dhaka, Bangladesh..."
                   required
                 />
@@ -75,11 +97,11 @@ export function NewJobPage() {
                   <select
                     id="job-category"
                     name="category"
-                    defaultValue="Design"
+                    defaultValue={options[0]}
                     className="mt-2 h-10 w-full rounded-[11px] border border-[#D6DDEB] bg-white px-3 text-[14px] text-[#25324B] outline-none focus-visible:ring-2 focus-visible:ring-[#4640DE]"
                     required
                   >
-                    {categories.map((category) => (
+                    {options.map((category) => (
                       <option key={category} value={category}>
                         {category}
                       </option>
@@ -91,6 +113,7 @@ export function NewJobPage() {
               <FormControl
                 id="job-image-url"
                 label="Company Logo Link"
+                name="image_url"
                 placeholder="https://your-image-link.com/logo.png..."
                 type="url"
                 required
@@ -98,7 +121,10 @@ export function NewJobPage() {
 
               <div className="rounded-xl border border-[#E6E9F3] bg-[#FAFBFF] p-4">
                 <div className="flex items-start gap-3">
-                  <FileImage aria-hidden="true" className="mt-0.5 size-5 text-[#4640DE]" />
+                  <FileImage
+                    aria-hidden="true"
+                    className="mt-0.5 size-5 text-[#4640DE]"
+                  />
                   <p className="text-[14px] text-[#515B6F]">
                     Paste a valid image link so your company logo appears on job
                     cards.
@@ -181,7 +207,7 @@ export function NewJobPage() {
                 Pick the category that best describes the role.
               </p>
               <div className="mt-4 flex flex-wrap gap-2">
-                {categories.map((category) => (
+                {options.map((category) => (
                   <span
                     key={category}
                     className="inline-flex h-8 items-center rounded-full bg-[#ECEBFF] px-3 text-[12px] font-semibold text-[#4640DE]"
@@ -201,12 +227,14 @@ export function NewJobPage() {
 function FormControl({
   id,
   label,
+  name,
   placeholder,
   required = false,
   type = "text",
 }: {
   id: string;
   label: string;
+  name: string;
   placeholder: string;
   required?: boolean;
   type?: "text" | "url";
@@ -218,7 +246,7 @@ function FormControl({
       </label>
       <Input
         id={id}
-        name={id.replace("job-", "").replaceAll("-", "_")}
+        name={name}
         type={type}
         required={required}
         placeholder={placeholder}

@@ -2,75 +2,17 @@ import { Button } from "@workspace/ui/components/button";
 import { Input } from "@workspace/ui/components/input";
 import { Plus, Search, Trash2 } from "lucide-react";
 import Link from "next/link";
+import type { AdminCategory, AdminJob } from "./admin-api";
+import { deleteJobAction } from "./actions";
 
-type AdminJob = {
-  category:
-    | "Business"
-    | "Design"
-    | "Engineering"
-    | "Finance"
-    | "Human Resource"
-    | "Marketing"
-    | "Sales"
-    | "Technology";
-  company: string;
-  created_at: string;
-  description: string;
-  employment_type: "Full Time";
-  id: string;
-  image_url: string;
-  location: string;
-  title: string;
+type AdminDashboardProps = {
+  categories: AdminCategory[];
+  error?: string;
+  jobs: AdminJob[];
+  notice?: string;
+  query: string;
+  selectedCategory: string;
 };
-
-const adminJobs: AdminJob[] = [
-  {
-    id: "job_01",
-    title: "Email Marketing",
-    company: "Revolut",
-    location: "Madrid, Spain",
-    category: "Marketing",
-    image_url: "/assets/author-companies/R.png",
-    employment_type: "Full Time",
-    description:
-      "Revolut is looking for Email Marketing to help team market products...",
-    created_at: "2026-02-27T08:12:00.000Z",
-  },
-  {
-    id: "job_02",
-    title: "Brand Designer",
-    company: "Dropbox",
-    location: "San Fransisco, US",
-    category: "Design",
-    image_url: "/assets/author-companies/company-logo.png",
-    employment_type: "Full Time",
-    description:
-      "Dropbox is looking for Brand Designer to help the team think creatively...",
-    created_at: "2026-02-26T14:30:00.000Z",
-  },
-  {
-    id: "job_03",
-    title: "Data Analyst",
-    company: "Twitter",
-    location: "San Diego, US",
-    category: "Technology",
-    image_url: "/assets/author-companies/company-logo-6.png",
-    employment_type: "Full Time",
-    description: "Twitter is looking for Data Analyst to help team design...",
-    created_at: "2026-02-25T16:05:00.000Z",
-  },
-  {
-    id: "job_04",
-    title: "Brand Strategist",
-    company: "GoDaddy",
-    location: "Marseille, France",
-    category: "Marketing",
-    image_url: "/assets/author-companies/company-logo-5.png",
-    employment_type: "Full Time",
-    description: "GoDaddy is looking for Brand Strategist to join the team...",
-    created_at: "2026-02-24T09:45:00.000Z",
-  },
-];
 
 const formatDateTime = (value: string): string => {
   return new Intl.DateTimeFormat("en-US", {
@@ -80,19 +22,47 @@ const formatDateTime = (value: string): string => {
   }).format(new Date(value));
 };
 
-const newestJob = [...adminJobs].sort(
-  (a, b) =>
-    new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
-)[0];
+const decodeMessage = (value?: string): string | undefined => {
+  if (!value) {
+    return undefined;
+  }
 
-const categoryMap = adminJobs.reduce<Record<string, number>>((acc, job) => {
-  acc[job.category] = (acc[job.category] ?? 0) + 1;
-  return acc;
-}, {});
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+};
 
-const categorySummary = Object.entries(categoryMap).sort((a, b) => b[1] - a[1]);
+export function AdminDashboard({
+  categories,
+  error,
+  jobs,
+  notice,
+  query,
+  selectedCategory,
+}: AdminDashboardProps) {
+  const safeNotice = decodeMessage(notice);
+  const safeError = decodeMessage(error);
+  const newestJob = [...jobs].sort(
+    (a, b) =>
+      new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+  )[0];
 
-export function AdminDashboard() {
+  const categorySummary =
+    categories.length > 0
+      ? categories
+          .map((category) => [category.title, category.available_jobs] as const)
+          .sort((a, b) => b[1] - a[1])
+      : Object.entries(
+          jobs.reduce<Record<string, number>>((acc, job) => {
+            acc[job.category] = (acc[job.category] ?? 0) + 1;
+            return acc;
+          }, {}),
+        ).sort((a, b) => b[1] - a[1]);
+
+  const hasFilters = query.trim().length > 0 || selectedCategory !== "all";
+
   return (
     <section className="relative overflow-hidden bg-[#F8F8FD]">
       <div
@@ -122,10 +92,22 @@ export function AdminDashboard() {
           </Link>
         </header>
 
+        {safeNotice ? (
+          <p className="relative z-10 mt-5 rounded-xl border border-[#BEE8D9] bg-[#EAF9F3] px-4 py-3 text-[14px] font-medium text-[#1C9E80]">
+            {safeNotice}
+          </p>
+        ) : null}
+
+        {safeError ? (
+          <p className="relative z-10 mt-5 rounded-xl border border-[#F7CFCF] bg-[#FFF1F1] px-4 py-3 text-[14px] font-medium text-[#C03F3F]">
+            {safeError}
+          </p>
+        ) : null}
+
         <div className="relative z-10 mt-7 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <MetricCard
             label="Total Jobs"
-            value={`${adminJobs.length}`}
+            value={`${jobs.length}`}
             meta="All active job posts"
           />
           <MetricCard
@@ -136,7 +118,11 @@ export function AdminDashboard() {
           <MetricCard
             label="Newest Post"
             value={newestJob ? newestJob.title : "No jobs yet"}
-            meta={newestJob ? formatDateTime(newestJob.created_at) : "Add your first job"}
+            meta={
+              newestJob
+                ? formatDateTime(newestJob.created_at)
+                : "Add your first job"
+            }
           />
           <MetricCard
             label="Team Action"
@@ -158,8 +144,12 @@ export function AdminDashboard() {
                   </p>
                 </div>
 
-                <div className="flex w-full flex-col gap-3 sm:flex-row lg:w-auto">
-                  <div className="relative w-full sm:w-80">
+                <form
+                  action="/dashboard"
+                  method="get"
+                  className="flex w-full flex-col gap-3 sm:flex-row lg:w-auto"
+                >
+                  <div className="relative w-full sm:w-72">
                     <label htmlFor="admin-job-search" className="sr-only">
                       Search jobs
                     </label>
@@ -169,23 +159,47 @@ export function AdminDashboard() {
                     />
                     <Input
                       id="admin-job-search"
-                      name="admin_job_search"
+                      name="q"
                       autoComplete="off"
                       type="search"
+                      defaultValue={query}
                       placeholder="Search by title, company, location..."
                       aria-label="Search by title, company, location"
                       className="h-10 rounded-[11px] border-[#D6DDEB] bg-white pl-9 text-[#25324B]"
                     />
                   </div>
-                  <Link href="/dashboard/new-job">
-                    <Button
-                      variant="outline"
-                      className="h-10 rounded-[11px] border-[#D6DDEB] bg-white px-4 text-[#25324B] hover:bg-[#F6F7FB]"
+                  <label htmlFor="admin-category-filter" className="sr-only">
+                    Filter by category
+                  </label>
+                  <select
+                    id="admin-category-filter"
+                    name="category"
+                    defaultValue={selectedCategory}
+                    className="h-10 rounded-[11px] border border-[#D6DDEB] bg-white px-3 text-[14px] text-[#25324B] outline-none focus-visible:ring-2 focus-visible:ring-[#4640DE]"
+                  >
+                    <option value="all">All categories</option>
+                    {categorySummary.map(([category]) => (
+                      <option key={category} value={category}>
+                        {category}
+                      </option>
+                    ))}
+                  </select>
+                  <Button
+                    type="submit"
+                    variant="outline"
+                    className="h-10 rounded-[11px] border-[#D6DDEB] bg-white px-4 text-[#25324B] hover:bg-[#F6F7FB]"
+                  >
+                    Filter
+                  </Button>
+                  {hasFilters ? (
+                    <Link
+                      href="/dashboard"
+                      className="inline-flex h-10 items-center justify-center rounded-[11px] border border-[#D6DDEB] bg-white px-4 text-[14px] font-medium text-[#515B6F] hover:bg-[#F6F7FB]"
                     >
-                      Add Job
-                    </Button>
-                  </Link>
-                </div>
+                      Reset
+                    </Link>
+                  ) : null}
+                </form>
               </div>
             </div>
 
@@ -201,7 +215,7 @@ export function AdminDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {adminJobs.map((job) => (
+                  {jobs.map((job) => (
                     <tr key={job.id} className="border-t border-[#EDF0F7]">
                       <td className="px-6 py-4">
                         <p className="text-[16px] font-semibold text-[#25324B]">
@@ -223,14 +237,18 @@ export function AdminDashboard() {
                         {formatDateTime(job.created_at)}
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-8 rounded-[10px] px-2.5 text-[#D44545] hover:bg-[#FFEDED] hover:text-[#C23333]"
-                        >
-                          <Trash2 aria-hidden="true" className="size-4" />
-                          Delete
-                        </Button>
+                        <form action={deleteJobAction}>
+                          <input type="hidden" name="job_id" value={job.id} />
+                          <Button
+                            type="submit"
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 rounded-[10px] px-2.5 text-[#D44545] hover:bg-[#FFEDED] hover:text-[#C23333]"
+                          >
+                            <Trash2 aria-hidden="true" className="size-4" />
+                            Delete
+                          </Button>
+                        </form>
                       </td>
                     </tr>
                   ))}
@@ -239,7 +257,7 @@ export function AdminDashboard() {
             </div>
 
             <div className="space-y-3 p-4 md:hidden">
-              {adminJobs.map((job) => (
+              {jobs.map((job) => (
                 <article
                   key={`${job.id}-mobile`}
                   className="rounded-xl border border-[#E6E9F3] p-4"
@@ -257,14 +275,18 @@ export function AdminDashboard() {
                     <span>{job.employment_type}</span>
                     <span>{formatDateTime(job.created_at)}</span>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="mt-2 h-8 rounded-[10px] px-2.5 text-[#D44545] hover:bg-[#FFEDED] hover:text-[#C23333]"
-                  >
-                    <Trash2 aria-hidden="true" className="size-4" />
-                    Delete
-                  </Button>
+                  <form action={deleteJobAction}>
+                    <input type="hidden" name="job_id" value={job.id} />
+                    <Button
+                      type="submit"
+                      variant="ghost"
+                      size="sm"
+                      className="mt-2 h-8 rounded-[10px] px-2.5 text-[#D44545] hover:bg-[#FFEDED] hover:text-[#C23333]"
+                    >
+                      <Trash2 aria-hidden="true" className="size-4" />
+                      Delete
+                    </Button>
+                  </form>
                 </article>
               ))}
             </div>
