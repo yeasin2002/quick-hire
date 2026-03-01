@@ -1,23 +1,26 @@
 # Docker Commands Guide (Current Setup)
 
-Simple Docker workflow for backend server using Task and Docker Compose.
+Simple Docker workflow for both backend (`apps/server`) and web (`apps/web`) using Task + Docker Compose.
 
 ## Files Used
 
 - `Taskfile.yml`
-- `apps/server/docker-compose.yml`
 - `apps/server/Dockerfile`
+- `apps/server/docker-compose.yml`
+- `apps/web/Dockerfile`
+- `apps/web/docker-compose.yml`
 - `apps/server/.env`
+- `apps/web/.env`
 
 ## Available Task Commands
 
-Run this to list commands:
+List commands:
 
 ```bash
 task
 ```
 
-Current Docker tasks:
+Server tasks:
 
 - `task docker:build`
 - `task docker:up`
@@ -25,21 +28,31 @@ Current Docker tasks:
 - `task docker:logs`
 - `task docker:ps`
 
+Web tasks:
+
+- `task docker:web:build`
+- `task docker:web:up`
+- `task docker:web:down`
+- `task docker:web:logs`
+- `task docker:web:ps`
+
 ## Basic Usage
 
-1. Build server image:
+### Backend (`apps/server`)
+
+1. Build:
 
 ```bash
 task docker:build
 ```
 
-2. Start container:
+2. Start:
 
 ```bash
 task docker:up
 ```
 
-3. Check running status:
+3. Check status:
 
 ```bash
 task docker:ps
@@ -51,40 +64,86 @@ task docker:ps
 task docker:logs
 ```
 
-5. Stop container:
+5. Stop:
 
 ```bash
 task docker:down
 ```
 
-## Health Check
+### Web (`apps/web`)
 
-After `task docker:up`, test API:
+1. Build:
+
+```bash
+task docker:web:build
+```
+
+2. Start:
+
+```bash
+task docker:web:up
+```
+
+3. Check status:
+
+```bash
+task docker:web:ps
+```
+
+4. Watch logs:
+
+```bash
+task docker:web:logs
+```
+
+5. Stop:
+
+```bash
+task docker:web:down
+```
+
+## Ports
+
+- Backend: `8000`
+- Web: `3001`
+
+## Health Checks
+
+Backend:
 
 ```bash
 curl http://localhost:8000/
 ```
 
-Expected: JSON response from QuickHire API.
+Web:
+
+```bash
+curl http://localhost:3001/
+```
 
 ## Notes
 
-- Compose maps port `8000:8000`.
-- Compose loads env from `apps/server/.env` (`env_file: .env` inside `apps/server/docker-compose.yml`).
-- Run task commands from repo root: `C:\Yeasin\experiment\quick-hire`.
+- Run all task commands from repo root: `C:\Yeasin\experiment\quick-hire`.
+- Server compose loads env from `apps/server/.env`.
+- Web compose loads env from `apps/web/.env`.
 
 ## Common Issues
 
 - Docker daemon not running:
   - Start Docker Desktop/service and retry.
 
-- `apps/server/.env` missing:
-  - Create it before `task docker:up`.
+- Missing env files:
+  - Ensure `apps/server/.env` and `apps/web/.env` exist.
 
-- Port `8000` already in use:
-  - Stop the conflicting app/container, then run:
+- Port conflict on `8000` or `3001`:
+  - Stop conflicting process/container, then restart related service:
 
 ```bash
 task docker:down
 task docker:up
+```
+
+```bash
+task docker:web:down
+task docker:web:up
 ```

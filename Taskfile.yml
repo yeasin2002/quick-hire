@@ -1,8 +1,10 @@
 version: "3"
 
 vars:
-  COMPOSE_FILE: apps/server/docker-compose.yml
-  SERVICE_NAME: server
+  COMPOSE_SERVER_FILE: apps/server/docker-compose.yml
+  SERVER_SERVICE_NAME: server
+  COMPOSE_WEB_FILE: apps/web/docker-compose.yml
+  WEB_SERVICE_NAME: web
 
 tasks:
   default:
@@ -13,24 +15,49 @@ tasks:
   docker:build:
     desc: Build server container image
     cmds:
-      - docker compose -f {{.COMPOSE_FILE}} build {{.SERVICE_NAME}}
+      - docker compose -f {{.COMPOSE_SERVER_FILE}} build {{.SERVER_SERVICE_NAME}}
 
   docker:up:
     desc: Start server container
     cmds:
-      - docker compose -f {{.COMPOSE_FILE}} up -d {{.SERVICE_NAME}}
+      - docker compose -f {{.COMPOSE_SERVER_FILE}} up -d {{.SERVER_SERVICE_NAME}}
 
   docker:down:
     desc: Stop and remove server container
     cmds:
-      - docker compose -f {{.COMPOSE_FILE}} down
+      - docker compose -f {{.COMPOSE_SERVER_FILE}} down
 
   docker:logs:
     desc: Show server logs
     cmds:
-      - docker compose -f {{.COMPOSE_FILE}} logs -f {{.SERVICE_NAME}}
+      - docker compose -f {{.COMPOSE_SERVER_FILE}} logs -f {{.SERVER_SERVICE_NAME}}
 
   docker:ps:
     desc: Show container status
     cmds:
-      - docker compose -f {{.COMPOSE_FILE}} ps
+      - docker compose -f {{.COMPOSE_SERVER_FILE}} ps
+
+  docker:web:build:
+    desc: Build web container image
+    cmds:
+      - docker compose -f {{.COMPOSE_WEB_FILE}} build {{.WEB_SERVICE_NAME}}
+
+  docker:web:up:
+    desc: Start web container
+    cmds:
+      - docker compose -f {{.COMPOSE_WEB_FILE}} up -d {{.WEB_SERVICE_NAME}}
+
+  docker:web:down:
+    desc: Stop and remove web container
+    cmds:
+      - docker compose -f {{.COMPOSE_WEB_FILE}} down
+
+  docker:web:logs:
+    desc: Show web logs
+    cmds:
+      - docker compose -f {{.COMPOSE_WEB_FILE}} logs -f {{.WEB_SERVICE_NAME}}
+
+  docker:web:ps:
+    desc: Show web container status
+    cmds:
+      - docker compose -f {{.COMPOSE_WEB_FILE}} ps
