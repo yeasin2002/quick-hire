@@ -16,7 +16,7 @@ export const Nav = () => {
             aria-label="QuickHire home"
             className="inline-flex shrink-0 touch-manipulation items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4D4DED]"
           >
-            <Logo className="text-white" />
+            <Logo className="text-black" />
           </Link>
 
           <nav aria-label="Primary navigation" className="hidden md:block">

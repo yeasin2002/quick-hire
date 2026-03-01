@@ -18,7 +18,7 @@ export const LatestJobsOpen = async () => {
           </h2>
 
           <Link
-            href="#"
+            href="/jobs"
             className="hidden items-center gap-2 text-[16px] font-semibold leading-none text-[#4640DE] transition-colors duration-200 hover:text-[#5B56E8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4640DE] motion-reduce:transition-none lg:inline-flex"
           >
             Show all jobs

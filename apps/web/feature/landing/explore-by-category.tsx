@@ -9,9 +9,19 @@ export const ExploreByCategory = async () => {
 
   return (
     <section className="landing-section-container">
-      <h2 className="landing-section-heading">
-        Explore by <span className="text-[#26A4FF]">category</span>
-      </h2>
+      <div className="flex items-center justify-between gap-4">
+        <h2 className="landing-section-heading">
+          Explore by <span className="text-[#26A4FF]">category</span>
+        </h2>
+
+        <Link
+          href="/jobs"
+          className="hidden items-center gap-2  font-semibold leading-none text-[#4640DE] transition-colors duration-200 hover:text-[#5B56E8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4640DE] motion-reduce:transition-none lg:inline-flex font-epilogue text-[16px]"
+        >
+          Show all jobs
+          <ArrowRight aria-hidden="true" className="size-6" strokeWidth={2.1} />
+        </Link>
+      </div>
 
       <div className="mt-6 grid grid-cols-1 gap-4 md:mt-10 md:gap-6 md:grid-cols-2 xl:grid-cols-4">
         {categories?.map((item) => {

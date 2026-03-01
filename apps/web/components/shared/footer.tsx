@@ -25,7 +25,7 @@ export function Footer() {
       <div className="mx-auto w-full max-w-435 px-6 pb-12 pt-20 sm:px-10 lg:px-16 xl:px-24 xl:pb-14 xl:pt-24">
         <div className="grid gap-14 md:grid-cols-2 xl:grid-cols-[minmax(0,1.8fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_minmax(0,1.35fr)] xl:gap-17.5">
           <div>
-            <Logo />
+            <Logo className="text-white" />
 
             <p className="mt-9 max-w-132 text-[18px] leading-[1.55] text-[#C5CAD7]">
               Great platform for the job seeker that passionate about startups.
