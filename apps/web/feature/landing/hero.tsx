@@ -1,8 +1,92 @@
 import rightMan from "@/assets/hero-man.png";
-import { ChevronDown, MapPin, Search } from "lucide-react";
+import { jobs as localJobs } from "@/data/job.data";
+import { baseUrl } from "@/lib/constant";
 import Image from "next/image";
+import { HeroSearchForm } from "./hero-search-form";
 
-export const HeroSection = () => {
+type ApiJobsResponse = {
+  data?: Array<{
+    location?: string;
+  }>;
+  success?: boolean;
+};
+
+const getUniqueLocations = (locations: string[]): string[] => {
+  return Array.from(
+    new Set(
+      locations
+        .map((location) => location.trim())
+        .filter((location) => location.length > 0),
+    ),
+  ).sort((a, b) => a.localeCompare(b));
+};
+
+const getApiBaseUrl = (): string | null => {
+  const normalizedBaseUrl = baseUrl?.trim();
+  if (!normalizedBaseUrl) {
+    return null;
+  }
+
+  return normalizedBaseUrl.endsWith("/")
+    ? normalizedBaseUrl.slice(0, -1)
+    : normalizedBaseUrl;
+};
+
+const toApiUrl = (path: string): string | null => {
+  const apiBaseUrl = getApiBaseUrl();
+  if (!apiBaseUrl) {
+    return null;
+  }
+
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  return `${apiBaseUrl}${normalizedPath}`;
+};
+
+const getLocationsFromApi = async (): Promise<string[]> => {
+  const jobsApiUrl = toApiUrl("/api/jobs");
+  if (!jobsApiUrl) {
+    return [];
+  }
+
+  try {
+    const response = await fetch(jobsApiUrl, {
+      headers: {
+        Accept: "application/json",
+      },
+      next: {
+        revalidate: 60,
+      },
+    });
+
+    if (!response.ok) {
+      return [];
+    }
+
+    const payload = (await response.json()) as ApiJobsResponse;
+    if (!payload.success || !Array.isArray(payload.data)) {
+      return [];
+    }
+
+    return getUniqueLocations(
+      payload.data
+        .map((job) => job.location ?? "")
+        .filter((location) => location.length > 0),
+    );
+  } catch {
+    return [];
+  }
+};
+
+const getLocationsFallback = (): string[] => {
+  return getUniqueLocations(
+    localJobs.map((job) => `${job.location.trim()}, ${job.country.trim()}`),
+  );
+};
+
+export const HeroSection = async () => {
+  const apiLocations = await getLocationsFromApi();
+  const locations = apiLocations.length > 0 ? apiLocations : getLocationsFallback();
+
   return (
     <section className="relative overflow-hidden bg-[#F8F8FD]">
       <BackgroundLines />
@@ -24,71 +108,7 @@ export const HeroSection = () => {
             heights and passionate about startups.
           </p>
 
-          <form
-            className="mt-11 w-full max-w-260 bg-white p-3 shadow-[0_16px_50px_rgba(37,50,75,0.08)]"
-            action="#"
-            method="post"
-          >
-            <div className="flex flex-col gap-4 md:flex-row md:items-center">
-              <div className="flex min-w-0 flex-1 items-center gap-4 px-3 py-2">
-                <Search
-                  aria-hidden="true"
-                  className="size-8 shrink-0 text-[#25324B]"
-                  strokeWidth={2.2}
-                />
-
-                <div className="min-w-0 flex-1">
-                  <label htmlFor="search-keyword" className="sr-only">
-                    Job title or keyword
-                  </label>
-                  <input
-                    id="search-keyword"
-                    name="keyword"
-                    type="text"
-                    placeholder="Job title or keyword"
-                    className="w-full border-b border-[#CFD4E2] bg-transparent pb-3 text-[17px] text-[#25324B] outline-none placeholder:text-[#B2B7C4] focus-visible:border-[#4D4DED] sm:text-[18px]"
-                  />
-                </div>
-              </div>
-
-              <div className="hidden h-16 w-px bg-[#E7EAF2] md:block" />
-
-              <div className="flex min-w-0 flex-1 items-center gap-4 px-3 py-2">
-                <MapPin
-                  aria-hidden="true"
-                  className="size-8 shrink-0 text-[#25324B]"
-                  strokeWidth={2.2}
-                />
-
-                <div className="min-w-0 flex-1">
-                  <label htmlFor="search-location" className="sr-only">
-                    Location
-                  </label>
-                  <div className="flex items-center gap-2 border-b border-[#CFD4E2] pb-3">
-                    <input
-                      id="search-location"
-                      name="location"
-                      type="text"
-                      defaultValue="Florence, Italy"
-                      className="w-full bg-transparent text-[17px] text-[#25324B] outline-none sm:text-[18px]"
-                    />
-                    <ChevronDown
-                      aria-hidden="true"
-                      className="size-6 shrink-0 text-[#7F8794]"
-                      strokeWidth={2.6}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                className="h-20 shrink-0 bg-[#4640DE] px-8 text-[18px] font-semibold leading-none text-[#F8FAFF] transition-colors duration-200 hover:bg-[#5B56E8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8380F0] motion-reduce:transition-none md:min-w-[320px]"
-              >
-                Search my job
-              </button>
-            </div>
-          </form>
+          <HeroSearchForm locations={locations} />
 
           <p className="mt-5 text-[16px] text-[#646D7A] sm:text-[18px] lg:text-[20px]">
             Popular : UI Designer, UX Researcher, Android, Admin
