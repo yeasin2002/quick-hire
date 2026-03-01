@@ -1,17 +1,17 @@
 import {
-  CompaniesTrustList,
   CtaBanner,
   ExploreByCategory,
   FeaturedJobs,
   HeroSection,
   LatestJobsOpen,
+  TrustedCompanies,
 } from "@/feature/landing";
 
 export default function Page() {
   return (
     <div>
       <HeroSection />
-      <CompaniesTrustList />
+      <TrustedCompanies />
       <ExploreByCategory />
       <CtaBanner />
       <FeaturedJobs />

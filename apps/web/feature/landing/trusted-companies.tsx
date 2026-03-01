@@ -13,7 +13,7 @@ const companies = [
   { name: "Talkit", logo: company5, className: "h-10 w-auto sm:h-12" },
 ];
 
-export const CompaniesTrustList = () => {
+export const TrustedCompanies = () => {
   return (
     <section className="bg-[#F8F8FA]">
       <div className="mx-auto w-full max-w-435 px-6 py-14 sm:px-10 sm:py-16 lg:px-16 xl:px-24 xl:py-20">
