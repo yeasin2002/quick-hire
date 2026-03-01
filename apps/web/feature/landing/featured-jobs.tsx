@@ -28,6 +28,7 @@ export const FeaturedJobs = async () => {
           {featuredJobs.map((job) => (
             <div key={job.id} className="w-87 max-w-[86vw] shrink-0 snap-start">
               <JobCard
+                id={job.id}
                 logo={job.image_url}
                 jobType={"Full Time" as const}
                 title={job.title}
@@ -44,6 +45,7 @@ export const FeaturedJobs = async () => {
       <div className="mt-10 hidden grid-cols-4 gap-6 lg:grid">
         {featuredJobs.map((job) => (
           <JobCard
+            id={job.id}
             key={job.id}
             logo={job.image_url}
             jobType={"Full Time" as const}

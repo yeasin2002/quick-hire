@@ -1,6 +1,7 @@
 import { ArrowRight } from "lucide-react";
 import type { StaticImageData } from "next/image";
 import Image from "next/image";
+import Link from "next/link";
 
 type CategoryCardProps = {
   icon: StaticImageData | string;
@@ -14,7 +15,7 @@ export const CategoryCard = ({
   availableJobs,
 }: CategoryCardProps) => {
   return (
-    <article className="group h-full border border-[#D6DDEB] bg-transparent px-4 py-5 md:p-8 xl:p-10">
+    <article className="group h-full border border-[#D6DDEB] bg-transparent px-4 py-5 md:p-8 xl:p-10 relative">
       <div className="flex items-center gap-4 md:block">
         <Image
           src={icon}
@@ -50,6 +51,11 @@ export const CategoryCard = ({
           strokeWidth={2.1}
         />
       </div>
+
+      <Link
+        href={`/jobs?category=${title}`}
+        className="absolute top-0 left-0 w-full h-full "
+      />
     </article>
   );
 };

@@ -1,8 +1,10 @@
 import Image from "next/image";
+import Link from "next/link";
 
 type JobTag = "Marketing" | "Design" | "Business" | "Technology";
 
 type JobCardProps = {
+  id: string;
   company: string;
   description: string;
   jobType: "Full Time";
@@ -58,6 +60,7 @@ const tagStyles: Record<JobTag, string> = {
 };
 
 export const JobCard = ({
+  id,
   logo,
   jobType,
   title,
@@ -70,7 +73,7 @@ export const JobCard = ({
   const tagList = getJobTagsFromCategory(tags);
 
   return (
-    <article className="border border-[#D6DDEB] bg-transparent px-6 py-5 sm:px-8 sm:py-6">
+    <article className="border border-[#D6DDEB] bg-transparent px-6 py-5 sm:px-8 sm:py-6 relative">
       <div className="flex items-start justify-between gap-4">
         <Image
           src={logo}
@@ -108,6 +111,11 @@ export const JobCard = ({
           </span>
         ))}
       </div>
+
+      <Link
+        href={`/jobs/${id}`}
+        className="absolute top-0 left-0 w-full h-full "
+      />
     </article>
   );
 };
