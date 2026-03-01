@@ -2,165 +2,35 @@ version: "3"
 
 vars:
   COMPOSE_FILE: apps/server/docker-compose.yml
-  ENV_FILE: apps/server/.env
-  PROJECT_NAME: quickhire-server
   SERVICE_NAME: server
 
 tasks:
   default:
-    desc: List available tasks
-    silent: false
+    desc: List available Docker tasks
     cmds:
       - task --list
 
-  docker:check:
-    desc: Verify Docker and Compose are available and daemon is running
-    silent: false
+  docker:build:
+    desc: Build server container image
     cmds:
-      - docker --version
-      - docker compose version
-      - docker info > /dev/null
+      - docker compose -f {{.COMPOSE_FILE}} build {{.SERVICE_NAME}}
 
-  docker:server:build:
-    desc: Build backend Docker image from compose config
-    silent: false
-    deps: [docker:check]
-    preconditions:
-      - sh: docker --version
-        msg: Docker CLI is not installed or not available in PATH.
-      - sh: docker compose version
-        msg: Docker Compose plugin is not installed or not available.
-      - sh: test -f "{{.COMPOSE_FILE}}"
-        msg: Compose file not found at {{.COMPOSE_FILE}}.
-      - sh: test -f "{{.ENV_FILE}}"
-        msg: Env file not found at {{.ENV_FILE}}.
+  docker:up:
+    desc: Start server container
     cmds:
-      - docker compose --env-file {{.ENV_FILE}} -p {{.PROJECT_NAME}} -f {{.COMPOSE_FILE}} build --pull {{.SERVICE_NAME}}
+      - docker compose -f {{.COMPOSE_FILE}} up -d {{.SERVICE_NAME}}
 
-  docker:server:up:
-    desc: Start backend container in detached mode
-    silent: false
-    deps: [docker:check]
-    preconditions:
-      - sh: docker --version
-        msg: Docker CLI is not installed or not available in PATH.
-      - sh: docker compose version
-        msg: Docker Compose plugin is not installed or not available.
-      - sh: test -f "{{.COMPOSE_FILE}}"
-        msg: Compose file not found at {{.COMPOSE_FILE}}.
-      - sh: test -f "{{.ENV_FILE}}"
-        msg: Env file not found at {{.ENV_FILE}}.
+  docker:down:
+    desc: Stop and remove server container
     cmds:
-      - docker compose --env-file {{.ENV_FILE}} -p {{.PROJECT_NAME}} -f {{.COMPOSE_FILE}} up -d {{.SERVICE_NAME}}
+      - docker compose -f {{.COMPOSE_FILE}} down
 
-  docker:server:down:
-    desc: Stop and remove backend compose resources
-    silent: false
-    deps: [docker:check]
-    preconditions:
-      - sh: docker --version
-        msg: Docker CLI is not installed or not available in PATH.
-      - sh: docker compose version
-        msg: Docker Compose plugin is not installed or not available.
-      - sh: test -f "{{.COMPOSE_FILE}}"
-        msg: Compose file not found at {{.COMPOSE_FILE}}.
-      - sh: test -f "{{.ENV_FILE}}"
-        msg: Env file not found at {{.ENV_FILE}}.
+  docker:logs:
+    desc: Show server logs
     cmds:
-      - docker compose --env-file {{.ENV_FILE}} -p {{.PROJECT_NAME}} -f {{.COMPOSE_FILE}} down --remove-orphans
+      - docker compose -f {{.COMPOSE_FILE}} logs -f {{.SERVICE_NAME}}
 
-  docker:server:restart:
-    desc: Restart backend service without rebuilding
-    silent: false
-    deps: [docker:check]
-    preconditions:
-      - sh: docker --version
-        msg: Docker CLI is not installed or not available in PATH.
-      - sh: docker compose version
-        msg: Docker Compose plugin is not installed or not available.
-      - sh: test -f "{{.COMPOSE_FILE}}"
-        msg: Compose file not found at {{.COMPOSE_FILE}}.
-      - sh: test -f "{{.ENV_FILE}}"
-        msg: Env file not found at {{.ENV_FILE}}.
+  docker:ps:
+    desc: Show container status
     cmds:
-      - docker compose --env-file {{.ENV_FILE}} -p {{.PROJECT_NAME}} -f {{.COMPOSE_FILE}} restart {{.SERVICE_NAME}}
-
-  docker:server:deploy:
-    desc: Deploy backend container for production
-    silent: false
-    deps: [docker:check]
-    preconditions:
-      - sh: docker --version
-        msg: Docker CLI is not installed or not available in PATH.
-      - sh: docker compose version
-        msg: Docker Compose plugin is not installed or not available.
-      - sh: test -f "{{.COMPOSE_FILE}}"
-        msg: Compose file not found at {{.COMPOSE_FILE}}.
-      - sh: test -f "{{.ENV_FILE}}"
-        msg: Env file not found at {{.ENV_FILE}}.
-    cmds:
-      - docker compose --env-file {{.ENV_FILE}} -p {{.PROJECT_NAME}} -f {{.COMPOSE_FILE}} up -d --build --pull always --force-recreate --remove-orphans {{.SERVICE_NAME}}
-
-  docker:server:logs:
-    desc: Tail backend service logs
-    silent: false
-    deps: [docker:check]
-    preconditions:
-      - sh: docker --version
-        msg: Docker CLI is not installed or not available in PATH.
-      - sh: docker compose version
-        msg: Docker Compose plugin is not installed or not available.
-      - sh: test -f "{{.COMPOSE_FILE}}"
-        msg: Compose file not found at {{.COMPOSE_FILE}}.
-      - sh: test -f "{{.ENV_FILE}}"
-        msg: Env file not found at {{.ENV_FILE}}.
-    cmds:
-      - docker compose --env-file {{.ENV_FILE}} -p {{.PROJECT_NAME}} -f {{.COMPOSE_FILE}} logs -f --tail=200 {{.SERVICE_NAME}}
-
-  docker:server:ps:
-    desc: Show backend service container status
-    silent: false
-    deps: [docker:check]
-    preconditions:
-      - sh: docker --version
-        msg: Docker CLI is not installed or not available in PATH.
-      - sh: docker compose version
-        msg: Docker Compose plugin is not installed or not available.
-      - sh: test -f "{{.COMPOSE_FILE}}"
-        msg: Compose file not found at {{.COMPOSE_FILE}}.
-      - sh: test -f "{{.ENV_FILE}}"
-        msg: Env file not found at {{.ENV_FILE}}.
-    cmds:
-      - docker compose --env-file {{.ENV_FILE}} -p {{.PROJECT_NAME}} -f {{.COMPOSE_FILE}} ps
-
-  docker:server:pull:
-    desc: Pull latest images for backend service
-    silent: false
-    deps: [docker:check]
-    preconditions:
-      - sh: docker --version
-        msg: Docker CLI is not installed or not available in PATH.
-      - sh: docker compose version
-        msg: Docker Compose plugin is not installed or not available.
-      - sh: test -f "{{.COMPOSE_FILE}}"
-        msg: Compose file not found at {{.COMPOSE_FILE}}.
-      - sh: test -f "{{.ENV_FILE}}"
-        msg: Env file not found at {{.ENV_FILE}}.
-    cmds:
-      - docker compose --env-file {{.ENV_FILE}} -p {{.PROJECT_NAME}} -f {{.COMPOSE_FILE}} pull {{.SERVICE_NAME}}
-
-  docker:server:clean:
-    desc: Prune unused Docker artifacts
-    silent: false
-    deps: [docker:check]
-    preconditions:
-      - sh: docker --version
-        msg: Docker CLI is not installed or not available in PATH.
-      - sh: docker compose version
-        msg: Docker Compose plugin is not installed or not available.
-      - sh: test -f "{{.COMPOSE_FILE}}"
-        msg: Compose file not found at {{.COMPOSE_FILE}}.
-      - sh: test -f "{{.ENV_FILE}}"
-        msg: Env file not found at {{.ENV_FILE}}.
-    cmds:
-      - docker system prune -f
+      - docker compose -f {{.COMPOSE_FILE}} ps
