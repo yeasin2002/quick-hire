@@ -26,6 +26,11 @@
       "sourceType": "github",
       "computedHash": "7340b396c662e9d794d7bc48c6e5d2b8f33128b045be24e1d84bc7249a610867"
     },
+    "shadcn-ui": {
+      "source": "giuseppe-trisciuoglio/developer-kit",
+      "sourceType": "github",
+      "computedHash": "6ac4f3b3f702e7d81edf883bea1f330bfd6b1b721e876c81642a96edf4c54d75"
+    },
     "vercel-react-best-practices": {
       "source": "vercel-labs/agent-skills",
       "sourceType": "github",
