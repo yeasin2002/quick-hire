@@ -86,7 +86,10 @@ export const openApiDocument = {
             format: "uri",
             example: "https://example.com/resume.pdf",
           },
-          cover_note: { type: "string", example: "I would love to join your team." },
+          cover_note: {
+            type: "string",
+            example: "I would love to join your team.",
+          },
           created_at: { type: "string", format: "date-time" },
         },
         required: [
@@ -120,7 +123,11 @@ export const openApiDocument = {
           },
           image_url: { type: "string", format: "uri" },
           description: { type: "string" },
-          employment_type: { type: "string", enum: ["Full Time"], default: "Full Time" },
+          employment_type: {
+            type: "string",
+            enum: ["Full Time"],
+            default: "Full Time",
+          },
         },
         required: [
           "title",
@@ -144,7 +151,8 @@ export const openApiDocument = {
           thumbnailUrl: {
             type: "string",
             format: "uri",
-            example: "https://ik.imagekit.io/quickhire/tr:n-ik_ml_thumbnail/uploads/design-icon.png",
+            example:
+              "https://ik.imagekit.io/quickhire/tr:n-ik_ml_thumbnail/uploads/design-icon.png",
           },
           width: { type: "number", example: 512 },
           height: { type: "number", example: 512 },

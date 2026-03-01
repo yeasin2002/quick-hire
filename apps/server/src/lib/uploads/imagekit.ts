@@ -60,4 +60,3 @@ export const uploadImageToImageKit = async ({
     width: response.width,
   };
 };
-

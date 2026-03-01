@@ -16,7 +16,10 @@ export default async function DashboardNewJobPage({
   return (
     <NewJobPage
       categories={categoriesResult.ok ? categoriesResult.data : []}
-      error={params.error || (!categoriesResult.ok ? categoriesResult.message : undefined)}
+      error={
+        params.error ||
+        (!categoriesResult.ok ? categoriesResult.message : undefined)
+      }
     />
   );
 }

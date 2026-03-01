@@ -29,9 +29,7 @@ const API_BASE_URL =
   "http://localhost:4000";
 
 const getApiBaseUrl = (): string => {
-  return API_BASE_URL.endsWith("/")
-    ? API_BASE_URL.slice(0, -1)
-    : API_BASE_URL;
+  return API_BASE_URL.endsWith("/") ? API_BASE_URL.slice(0, -1) : API_BASE_URL;
 };
 
 const toApiUrl = (path: string): string => {

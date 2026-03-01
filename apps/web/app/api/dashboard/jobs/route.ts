@@ -26,7 +26,10 @@ type BackendResult<T> = {
 const createJobSchema = z.object({
   category: z.enum(ADMIN_JOB_CATEGORIES),
   company: z.string().trim().min(1, "Company is required"),
-  description: z.string().trim().min(10, "Description should be at least 10 characters long"),
+  description: z
+    .string()
+    .trim()
+    .min(10, "Description should be at least 10 characters long"),
   location: z.string().trim().min(1, "Location is required"),
   title: z.string().trim().min(1, "Title is required"),
 });
@@ -51,7 +54,9 @@ const getErrorMessage = (
   payload: ApiErrorResponse | undefined,
   fallback: string,
 ): string => {
-  return payload?.error?.message?.trim() || payload?.message?.trim() || fallback;
+  return (
+    payload?.error?.message?.trim() || payload?.message?.trim() || fallback
+  );
 };
 
 export async function POST(request: Request) {
@@ -131,7 +136,9 @@ export async function POST(request: Request) {
 
     const uploadRaw = await uploadResponse.text();
     const uploadJson = uploadRaw
-      ? (JSON.parse(uploadRaw) as ApiSuccessResponse<UploadedImage> | ApiErrorResponse)
+      ? (JSON.parse(uploadRaw) as
+          | ApiSuccessResponse<UploadedImage>
+          | ApiErrorResponse)
       : undefined;
 
     if (!uploadResponse.ok) {
@@ -150,7 +157,9 @@ export async function POST(request: Request) {
       );
     }
 
-    const imageUrl = (uploadJson as ApiSuccessResponse<UploadedImage> | undefined)?.data?.url;
+    const imageUrl = (
+      uploadJson as ApiSuccessResponse<UploadedImage> | undefined
+    )?.data?.url;
     if (!imageUrl) {
       return NextResponse.json(
         {
@@ -202,7 +211,10 @@ export async function POST(request: Request) {
       createResult.payload as ApiErrorResponse | undefined,
       "",
     ).toLowerCase();
-    if (!createResult.ok && (createResult.status === 404 || routeMessage.includes("route not found"))) {
+    if (
+      !createResult.ok &&
+      (createResult.status === 404 || routeMessage.includes("route not found"))
+    ) {
       createResult = await callCreateJob("POST");
     }
 
@@ -225,7 +237,8 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         success: true,
-        data: (createResult.payload as ApiSuccessResponse<unknown> | undefined)?.data,
+        data: (createResult.payload as ApiSuccessResponse<unknown> | undefined)
+          ?.data,
       },
       { status: 201 },
     );

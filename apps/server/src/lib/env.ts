@@ -11,7 +11,9 @@ export const env = createEnv({
     IMAGEKIT_PRIVATE_KEY: z.string().min(1).optional(),
     IMAGEKIT_PUBLIC_KEY: z.string().min(1).optional(),
     IMAGEKIT_URL_ENDPOINT: z.url().optional(),
-    NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
+    NODE_ENV: z
+      .enum(["development", "production", "test"])
+      .default("development"),
   },
   runtimeEnv: process.env,
   emptyStringAsUndefined: true,

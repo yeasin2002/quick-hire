@@ -1,6 +1,11 @@
 import "server-only";
 import type { AdminCategory, AdminJob, AdminJobCreateInput } from "./constants";
-export type { AdminCategory, AdminJob, AdminJobCategory, AdminJobCreateInput } from "./constants";
+export type {
+  AdminCategory,
+  AdminJob,
+  AdminJobCategory,
+  AdminJobCreateInput,
+} from "./constants";
 
 export type UploadedAdminImage = {
   fileId: string;
@@ -84,7 +89,9 @@ const request = async <T>(
     });
 
     const raw = await response.text();
-    const payload = raw ? (JSON.parse(raw) as ApiSuccessResponse<T> | ApiErrorResponse) : undefined;
+    const payload = raw
+      ? (JSON.parse(raw) as ApiSuccessResponse<T> | ApiErrorResponse)
+      : undefined;
 
     if (!response.ok) {
       return {
@@ -131,7 +138,9 @@ const requestFormData = async <T>(
     });
 
     const raw = await response.text();
-    const payload = raw ? (JSON.parse(raw) as ApiSuccessResponse<T> | ApiErrorResponse) : undefined;
+    const payload = raw
+      ? (JSON.parse(raw) as ApiSuccessResponse<T> | ApiErrorResponse)
+      : undefined;
 
     if (!response.ok) {
       return {
@@ -185,7 +194,10 @@ export const uploadAdminImage = async (
   formData.set("file", file);
   formData.set("folder", folder);
 
-  return requestFormData<UploadedAdminImage>("/api/admin/uploads/image", formData);
+  return requestFormData<UploadedAdminImage>(
+    "/api/admin/uploads/image",
+    formData,
+  );
 };
 
 export const deleteAdminJob = async (

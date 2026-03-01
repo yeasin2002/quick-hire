@@ -25,4 +25,3 @@ export const requireAdmin: RequestHandler = (req, _res, next) => {
 
   next();
 };
-

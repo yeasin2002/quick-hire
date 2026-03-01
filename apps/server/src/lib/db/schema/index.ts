@@ -58,4 +58,3 @@ export const jobApplication = pgTable(
     index("job_application_created_at_idx").on(table.createdAt),
   ],
 );
-

@@ -1,5 +1,8 @@
 import { AdminDashboard } from "@/feature/dashboard";
-import { getAdminCategories, getAdminJobs } from "@/feature/dashboard/admin-api";
+import {
+  getAdminCategories,
+  getAdminJobs,
+} from "@/feature/dashboard/admin-api";
 
 type DashboardPageProps = {
   searchParams: Promise<{

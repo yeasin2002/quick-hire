@@ -325,8 +325,13 @@ export function AdminDashboard({
                 Quick Tips
               </h2>
               <ul className="mt-4 space-y-2 text-[14px] leading-[1.45] text-[#515B6F]">
-                <li>Use clear job titles so candidates understand the role quickly.</li>
-                <li>Keep descriptions short and focused on responsibilities.</li>
+                <li>
+                  Use clear job titles so candidates understand the role
+                  quickly.
+                </li>
+                <li>
+                  Keep descriptions short and focused on responsibilities.
+                </li>
                 <li>Pick the right category to improve job discoverability.</li>
               </ul>
             </section>
@@ -356,4 +361,3 @@ function MetricCard({
     </article>
   );
 }
-

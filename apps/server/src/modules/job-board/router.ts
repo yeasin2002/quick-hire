@@ -31,8 +31,10 @@ router.get(
   asyncHandler(async (req, res) => {
     const search = typeof req.query.search === "string" ? req.query.search : "";
     const q = typeof req.query.q === "string" ? req.query.q : "";
-    const category = typeof req.query.category === "string" ? req.query.category : "";
-    const location = typeof req.query.location === "string" ? req.query.location : "";
+    const category =
+      typeof req.query.category === "string" ? req.query.category : "";
+    const location =
+      typeof req.query.location === "string" ? req.query.location : "";
 
     const jobs = await getJobs({
       search: search || q,
@@ -50,19 +52,22 @@ router.get(
   }),
 );
 
-router.get("/jobs/:id", asyncHandler(async (req, res, next) => {
-  const jobId = String(req.params.id ?? "");
-  const job = await getJobById(jobId);
-  if (!job) {
-    next(new HttpError(404, "JOB_NOT_FOUND", "Job not found"));
-    return;
-  }
+router.get(
+  "/jobs/:id",
+  asyncHandler(async (req, res, next) => {
+    const jobId = String(req.params.id ?? "");
+    const job = await getJobById(jobId);
+    if (!job) {
+      next(new HttpError(404, "JOB_NOT_FOUND", "Job not found"));
+      return;
+    }
 
-  res.status(200).json({
-    success: true,
-    data: job,
-  });
-}));
+    res.status(200).json({
+      success: true,
+      data: job,
+    });
+  }),
+);
 
 const createJobHandler = asyncHandler(async (req, res) => {
   const payload = createJobSchema.parse(req.body);
@@ -98,7 +103,9 @@ router.post(
 
     const job = await getJobById(payload.job_id);
     if (!job) {
-      next(new HttpError(404, "JOB_NOT_FOUND", "Cannot apply to a missing job"));
+      next(
+        new HttpError(404, "JOB_NOT_FOUND", "Cannot apply to a missing job"),
+      );
       return;
     }
 

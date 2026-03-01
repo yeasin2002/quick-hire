@@ -3,11 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { ADMIN_JOB_CATEGORIES, type AdminJobCategory } from "./constants";
-import {
-  createAdminJob,
-  deleteAdminJob,
-  uploadAdminImage,
-} from "./admin-api";
+import { createAdminJob, deleteAdminJob, uploadAdminImage } from "./admin-api";
 
 const toRedirectUrl = (
   path: string,
@@ -29,7 +25,9 @@ const normalizeString = (value: FormDataEntryValue | null): string => {
   return typeof value === "string" ? value.trim() : "";
 };
 
-const isValidCategory = (value: string): value is (typeof ADMIN_JOB_CATEGORIES)[number] => {
+const isValidCategory = (
+  value: string,
+): value is (typeof ADMIN_JOB_CATEGORIES)[number] => {
   return (ADMIN_JOB_CATEGORIES as readonly string[]).includes(value);
 };
 
