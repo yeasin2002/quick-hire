@@ -14,6 +14,7 @@ export const CategoryCard = ({
   title,
   availableJobs,
 }: CategoryCardProps) => {
+  console.log("🚀 ~ CategoryCard ~ icon:", icon);
   return (
     <article className="group h-full border border-[#D6DDEB] bg-transparent px-4 py-5 md:p-8 xl:p-10 relative">
       <div className="flex items-center gap-4 md:block">
