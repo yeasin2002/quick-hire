@@ -70,38 +70,6 @@ task docker:logs
 task docker:down
 ```
 
-### Web (`apps/web`)
-
-1. Build:
-
-```bash
-task docker:web:build
-```
-
-2. Start:
-
-```bash
-task docker:web:up
-```
-
-3. Check status:
-
-```bash
-task docker:web:ps
-```
-
-4. Watch logs:
-
-```bash
-task docker:web:logs
-```
-
-5. Stop:
-
-```bash
-task docker:web:down
-```
-
 ## Ports
 
 - Backend: `8000`
@@ -115,11 +83,6 @@ Backend:
 curl http://localhost:8000/
 ```
 
-Web:
-
-```bash
-curl http://localhost:3001/
-```
 
 ## Notes
 
@@ -143,7 +106,3 @@ task docker:down
 task docker:up
 ```
 
-```bash
-task docker:web:down
-task docker:web:up
-```
