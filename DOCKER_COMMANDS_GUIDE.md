@@ -62,14 +62,14 @@ task docker:down
 After `task docker:up`, test API:
 
 ```bash
-curl http://localhost:4000/
+curl http://localhost:8000/
 ```
 
 Expected: JSON response from QuickHire API.
 
 ## Notes
 
-- Compose maps port `4000:4000`.
+- Compose maps port `8000:8000`.
 - Compose loads env from `apps/server/.env` (`env_file: .env` inside `apps/server/docker-compose.yml`).
 - Run task commands from repo root: `C:\Yeasin\experiment\quick-hire`.
 
@@ -81,7 +81,7 @@ Expected: JSON response from QuickHire API.
 - `apps/server/.env` missing:
   - Create it before `task docker:up`.
 
-- Port `4000` already in use:
+- Port `8000` already in use:
   - Stop the conflicting app/container, then run:
 
 ```bash

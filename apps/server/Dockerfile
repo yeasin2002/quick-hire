@@ -26,6 +26,6 @@ COPY --from=deps /app/apps/server/node_modules ./apps/server/node_modules
 COPY --from=build /app/apps/server/dist ./apps/server/dist
 COPY --from=build /app/apps/server/package.json ./apps/server/package.json
 
-EXPOSE 4000
+EXPOSE 8000
 
 CMD ["node", "apps/server/dist/index.mjs"]

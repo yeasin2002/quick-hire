@@ -8,6 +8,7 @@ import express from "express";
 import morgan from "morgan";
 
 const app = express();
+const port = env.PORT;
 
 app.use(
   cors({
@@ -37,14 +38,14 @@ app.get("/", (_req, res) => {
   res.status(200).json({
     success: true,
     message: "QuickHire API is running",
-    docs: "http://localhost:4000/api/docs",
-    openapi: "http://localhost:4000/api/openapi.json",
+    docs: `http://localhost:${port}/api/docs`,
+    openapi: `http://localhost:${port}/api/openapi.json`,
   });
 });
 
 app.use(notFoundHandler);
 app.use(errorHandler);
 
-app.listen(4000, () => {
-  console.log("Server is running on http://localhost:4000");
+app.listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`);
 });

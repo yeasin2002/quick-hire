@@ -4,6 +4,7 @@ import { z } from "zod";
 
 export const env = createEnv({
   server: {
+    PORT: z.coerce.number().int().positive().default(8000),
     DATABASE_URL: z.string().min(1),
     CORS_ORIGIN: z.url(),
     ADMIN_API_KEY: z.string().min(1).optional(),
