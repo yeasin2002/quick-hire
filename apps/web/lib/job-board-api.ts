@@ -23,6 +23,11 @@ type ApiListResponse<T> = {
   success?: boolean;
 };
 
+type ApiItemResponse<T> = {
+  data?: T;
+  success?: boolean;
+};
+
 const API_BASE_URL =
   process.env.API_BASE_URL ??
   process.env.NEXT_PUBLIC_API_BASE_URL ??
@@ -64,10 +69,41 @@ const fetchList = async <T>(path: string): Promise<T[]> => {
   }
 };
 
+const fetchItem = async <T>(path: string): Promise<T | null> => {
+  try {
+    const response = await fetch(toApiUrl(path), {
+      headers: {
+        Accept: "application/json",
+      },
+      method: "GET",
+      next: {
+        revalidate: 60,
+      },
+    });
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const payload = (await response.json()) as ApiItemResponse<T>;
+    if (!payload.success || !payload.data) {
+      return null;
+    }
+
+    return payload.data;
+  } catch {
+    return null;
+  }
+};
+
 export const getCategoriesApi = cache(async (): Promise<ApiCategory[]> => {
   return fetchList<ApiCategory>("/api/categories");
 });
 
 export const getJobsApi = cache(async (): Promise<ApiJob[]> => {
   return fetchList<ApiJob>("/api/jobs");
+});
+
+export const getJobByIdApi = cache(async (jobId: string): Promise<ApiJob | null> => {
+  return fetchItem<ApiJob>(`/api/jobs/${jobId}`);
 });

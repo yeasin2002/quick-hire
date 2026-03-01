@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Logo } from "./logo";
 
 const navLinks = [
-  { label: "Find Jobs", href: "#" },
+  { label: "Find Jobs", href: "/jobs" },
   { label: "Browse Companies", href: "#" },
 ];
 
