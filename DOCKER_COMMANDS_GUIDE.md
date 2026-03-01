@@ -28,13 +28,7 @@ Server tasks:
 - `task docker:logs`
 - `task docker:ps`
 
-Web tasks:
 
-- `task docker:web:build`
-- `task docker:web:up`
-- `task docker:web:down`
-- `task docker:web:logs`
-- `task docker:web:ps`
 
 ## Basic Usage
 

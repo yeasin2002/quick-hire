@@ -25,6 +25,12 @@ tasks:
     cmds:
       - docker compose -f {{.COMPOSE_SERVER_FILE}} down
 
+  docker:restart:
+    desc: Recreate server container after code changes
+    cmds:
+      - docker compose -f {{.COMPOSE_SERVER_FILE}} down
+      - docker compose -f {{.COMPOSE_SERVER_FILE}} up -d --build {{.SERVER_SERVICE_NAME}}
+
   docker:logs:
     desc: Show server logs
     cmds:

@@ -53,6 +53,36 @@ pnpm build
 pnpm build --filter web
 ```
 
+### Docker (Server)
+
+Run Docker commands from the repo root:
+
+```bash
+# Build server image
+task docker:build
+
+# Start server container
+task docker:up
+
+# Restart after code/config changes (down + up --build)
+task docker:restart
+
+# Check running containers
+task docker:ps
+
+# Follow server logs
+task docker:logs
+
+# Stop and remove containers
+task docker:down
+```
+
+Alternative VPS helper script:
+
+```bash
+bash scripts/restart-server.sh
+```
+
 ### Other Commands
 
 ```bash
