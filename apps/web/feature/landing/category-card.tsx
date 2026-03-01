@@ -3,7 +3,7 @@ import type { StaticImageData } from "next/image";
 import Image from "next/image";
 
 type CategoryCardProps = {
-  icon: StaticImageData;
+  icon: StaticImageData | string;
   title: string;
   availableJobs: number;
 };
@@ -21,6 +21,8 @@ export const CategoryCard = ({
           alt=""
           aria-hidden="true"
           className="h-11 w-auto shrink-0 md:h-14"
+          width={100}
+          height={100}
         />
 
         <div className="min-w-0 flex-1 md:mt-12">
