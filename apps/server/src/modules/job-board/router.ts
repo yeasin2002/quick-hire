@@ -128,6 +128,7 @@ router.get(
 );
 
 router.post("/admin/jobs", requireAdmin, createJobHandler);
+router.patch("/admin/jobs", requireAdmin, createJobHandler);
 router.delete("/admin/jobs/:id", requireAdmin, deleteJobHandler);
 
 router.get(

@@ -1,15 +1,58 @@
+"use client";
+
 import { Button } from "@workspace/ui/components/button";
 import { Input } from "@workspace/ui/components/input";
-import { ArrowLeft, FileImage, Plus } from "lucide-react";
+import { ArrowLeft, FileImage, Loader2, Plus } from "lucide-react";
 import Link from "next/link";
-import type { AdminCategory } from "./admin-api";
-import { ADMIN_JOB_CATEGORIES } from "./admin-api";
-import { createJobAction } from "./actions";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useForm, type UseFormRegisterReturn } from "react-hook-form";
+import { z } from "zod";
+import {
+  ADMIN_JOB_CATEGORIES,
+  type AdminCategory,
+  type AdminJobCategory,
+} from "./constants";
 
 type NewJobPageProps = {
   categories: AdminCategory[];
   error?: string;
 };
+
+type NewJobFormValues = {
+  category: AdminJobCategory;
+  company: string;
+  company_logo: FileList;
+  description: string;
+  location: string;
+  title: string;
+};
+
+type ErrorPayload = {
+  error?: {
+    message?: string;
+  };
+  message?: string;
+};
+
+const formSchema = z.object({
+  title: z.string().trim().min(1, "Title is required"),
+  company: z.string().trim().min(1, "Company is required"),
+  location: z.string().trim().min(1, "Location is required"),
+  category: z.enum(ADMIN_JOB_CATEGORIES),
+  description: z
+    .string()
+    .trim()
+    .min(10, "Description should be at least 10 characters long"),
+  company_logo: z
+    .custom<FileList>(
+      (value) => value instanceof FileList && value.length > 0,
+      { message: "Company logo is required" },
+    )
+    .refine((files) => files.item(0)?.type.startsWith("image/") ?? false, {
+      message: "Company logo must be an image file",
+    }),
+});
 
 const decodeMessage = (value?: string): string | undefined => {
   if (!value) {
@@ -23,10 +66,92 @@ const decodeMessage = (value?: string): string | undefined => {
   }
 };
 
+const getSubmitErrorMessage = async (response: Response): Promise<string> => {
+  try {
+    const payload = (await response.json()) as ErrorPayload;
+    return (
+      payload?.error?.message?.trim() ||
+      payload?.message?.trim() ||
+      `Request failed with status ${response.status}`
+    );
+  } catch {
+    return `Request failed with status ${response.status}`;
+  }
+};
+
 export function NewJobPage({ categories, error }: NewJobPageProps) {
+  const router = useRouter();
   const options =
-    categories.length > 0 ? categories.map((category) => category.title) : [...ADMIN_JOB_CATEGORIES];
+    categories.length > 0
+      ? categories.map((category) => category.title)
+      : [...ADMIN_JOB_CATEGORIES];
   const safeError = decodeMessage(error);
+  const [submitError, setSubmitError] = useState<string | undefined>(safeError);
+
+  const {
+    clearErrors,
+    formState: { errors, isSubmitting },
+    handleSubmit,
+    register,
+    setError,
+  } = useForm<NewJobFormValues>({
+    defaultValues: {
+      category: (options[0] ?? ADMIN_JOB_CATEGORIES[0]) as AdminJobCategory,
+      company: "",
+      description: "",
+      location: "",
+      title: "",
+    },
+  });
+
+  const onSubmit = handleSubmit(async (values) => {
+    setSubmitError(undefined);
+    clearErrors();
+
+    const validation = formSchema.safeParse(values);
+    if (!validation.success) {
+      for (const issue of validation.error.issues) {
+        const field = issue.path[0];
+        if (typeof field === "string") {
+          setError(field as keyof NewJobFormValues, {
+            type: "manual",
+            message: issue.message,
+          });
+        }
+      }
+      return;
+    }
+
+    const companyLogoFile = validation.data.company_logo.item(0);
+    if (!companyLogoFile) {
+      setError("company_logo", {
+        type: "manual",
+        message: "Company logo is required",
+      });
+      return;
+    }
+
+    const payload = new FormData();
+    payload.set("title", validation.data.title);
+    payload.set("company", validation.data.company);
+    payload.set("location", validation.data.location);
+    payload.set("category", validation.data.category);
+    payload.set("description", validation.data.description);
+    payload.set("company_logo", companyLogoFile);
+
+    const response = await fetch("/api/dashboard/jobs", {
+      body: payload,
+      method: "POST",
+    });
+
+    if (!response.ok) {
+      setSubmitError(await getSubmitErrorMessage(response));
+      return;
+    }
+
+    router.push("/dashboard?notice=Job%20added%20successfully.");
+    router.refresh();
+  });
 
   return (
     <section className="relative overflow-hidden bg-[#F8F8FD]">
@@ -53,29 +178,36 @@ export function NewJobPage({ categories, error }: NewJobPageProps) {
           </p>
         </header>
 
-        {safeError ? (
+        {submitError ? (
           <p className="relative z-10 mt-5 rounded-xl border border-[#F7CFCF] bg-[#FFF1F1] px-4 py-3 text-[14px] font-medium text-[#C03F3F]">
-            {safeError}
+            {submitError}
           </p>
         ) : null}
 
         <div className="relative z-10 mt-7 grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
           <section className="rounded-2xl border border-[#D6DDEB] bg-white p-5 sm:p-6">
-            <form action={createJobAction} className="space-y-5">
+            <form
+              onSubmit={onSubmit}
+              className="space-y-5"
+              aria-busy={isSubmitting}
+            >
               <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
                 <FormControl
                   id="job-title"
                   label="Title"
-                  name="title"
                   placeholder="Senior Product Designer..."
-                  required
+                  registration={register("title")}
+                  disabled={isSubmitting}
+                  error={errors.title?.message}
                 />
+
                 <FormControl
                   id="job-company"
                   label="Company"
-                  name="company"
                   placeholder="QuickHire..."
-                  required
+                  registration={register("company")}
+                  disabled={isSubmitting}
+                  error={errors.company?.message}
                 />
               </div>
 
@@ -83,9 +215,10 @@ export function NewJobPage({ categories, error }: NewJobPageProps) {
                 <FormControl
                   id="job-location"
                   label="Location"
-                  name="location"
                   placeholder="Dhaka, Bangladesh..."
-                  required
+                  registration={register("location")}
+                  disabled={isSubmitting}
+                  error={errors.location?.message}
                 />
                 <div>
                   <label
@@ -96,10 +229,9 @@ export function NewJobPage({ categories, error }: NewJobPageProps) {
                   </label>
                   <select
                     id="job-category"
-                    name="category"
-                    defaultValue={options[0]}
-                    className="mt-2 h-10 w-full rounded-[11px] border border-[#D6DDEB] bg-white px-3 text-[14px] text-[#25324B] outline-none focus-visible:ring-2 focus-visible:ring-[#4640DE]"
-                    required
+                    disabled={isSubmitting}
+                    className="mt-2 h-10 w-full rounded-[11px] border border-[#D6DDEB] bg-white px-3 text-[14px] text-[#25324B] outline-none focus-visible:ring-2 focus-visible:ring-[#4640DE] disabled:cursor-not-allowed disabled:opacity-70"
+                    {...register("category")}
                   >
                     {options.map((category) => (
                       <option key={category} value={category}>
@@ -107,17 +239,35 @@ export function NewJobPage({ categories, error }: NewJobPageProps) {
                       </option>
                     ))}
                   </select>
+                  {errors.category?.message ? (
+                    <p className="mt-1 text-[12px] font-medium text-[#C03F3F]">
+                      {errors.category.message}
+                    </p>
+                  ) : null}
                 </div>
               </div>
 
-              <FormControl
-                id="job-image-url"
-                label="Company Logo Link"
-                name="image_url"
-                placeholder="https://your-image-link.com/logo.png..."
-                type="url"
-                required
-              />
+              <div>
+                <label
+                  htmlFor="job-company-logo"
+                  className="text-[14px] font-semibold text-[#25324B]"
+                >
+                  Company Logo
+                </label>
+                <Input
+                  id="job-company-logo"
+                  type="file"
+                  accept="image/*"
+                  disabled={isSubmitting}
+                  {...register("company_logo")}
+                  className="mt-2 h-10 rounded-[11px] border-[#D6DDEB] bg-white text-[#25324B] file:mr-3 file:cursor-pointer file:rounded-md file:border-0 file:bg-[#ECEBFF] file:px-3 file:py-1 file:text-[12px] file:font-semibold file:text-[#4640DE] hover:file:bg-[#E0DFFF] disabled:cursor-not-allowed disabled:opacity-70"
+                />
+                {errors.company_logo?.message ? (
+                  <p className="mt-1 text-[12px] font-medium text-[#C03F3F]">
+                    {errors.company_logo.message}
+                  </p>
+                ) : null}
+              </div>
 
               <div className="rounded-xl border border-[#E6E9F3] bg-[#FAFBFF] p-4">
                 <div className="flex items-start gap-3">
@@ -126,8 +276,7 @@ export function NewJobPage({ categories, error }: NewJobPageProps) {
                     className="mt-0.5 size-5 text-[#4640DE]"
                   />
                   <p className="text-[14px] text-[#515B6F]">
-                    Paste a valid image link so your company logo appears on job
-                    cards.
+                    Upload a logo image.
                   </p>
                 </div>
               </div>
@@ -141,12 +290,17 @@ export function NewJobPage({ categories, error }: NewJobPageProps) {
                 </label>
                 <textarea
                   id="job-description"
-                  name="description"
                   rows={6}
-                  required
+                  disabled={isSubmitting}
                   placeholder="Write role responsibilities, required skills, and key expectations..."
-                  className="mt-2 w-full rounded-[11px] border border-[#D6DDEB] bg-white px-3 py-2.5 text-[14px] text-[#25324B] outline-none focus-visible:ring-2 focus-visible:ring-[#4640DE]"
+                  className="mt-2 w-full rounded-[11px] border border-[#D6DDEB] bg-white px-3 py-2.5 text-[14px] text-[#25324B] outline-none focus-visible:ring-2 focus-visible:ring-[#4640DE] disabled:cursor-not-allowed disabled:opacity-70"
+                  {...register("description")}
                 />
+                {errors.description?.message ? (
+                  <p className="mt-1 text-[12px] font-medium text-[#C03F3F]">
+                    {errors.description.message}
+                  </p>
+                ) : null}
               </div>
 
               <div>
@@ -158,7 +312,6 @@ export function NewJobPage({ categories, error }: NewJobPageProps) {
                 </label>
                 <Input
                   id="job-employment-type"
-                  name="employment_type"
                   defaultValue="Full Time"
                   readOnly
                   className="mt-2 h-10 rounded-[11px] border-[#D6DDEB] bg-[#F9FAFD] text-[#25324B]"
@@ -170,6 +323,7 @@ export function NewJobPage({ categories, error }: NewJobPageProps) {
                   <Button
                     type="button"
                     variant="outline"
+                    disabled={isSubmitting}
                     className="h-11 rounded-[12px] border-[#D6DDEB] bg-white px-5 text-[#25324B] hover:bg-[#F6F7FB]"
                   >
                     Cancel
@@ -177,10 +331,23 @@ export function NewJobPage({ categories, error }: NewJobPageProps) {
                 </Link>
                 <Button
                   type="submit"
+                  disabled={isSubmitting}
                   className="h-11 rounded-[12px] bg-[#4640DE] px-5 text-white hover:bg-[#5651EA]"
                 >
-                  <Plus aria-hidden="true" className="size-4" />
-                  Add Job
+                  {isSubmitting ? (
+                    <>
+                      <Loader2
+                        aria-hidden="true"
+                        className="size-4 animate-spin"
+                      />
+                      Publishing...
+                    </>
+                  ) : (
+                    <>
+                      <Plus aria-hidden="true" className="size-4" />
+                      Add Job
+                    </>
+                  )}
                 </Button>
               </div>
             </form>
@@ -195,7 +362,7 @@ export function NewJobPage({ categories, error }: NewJobPageProps) {
                 <li>Use a clear and specific job title.</li>
                 <li>Choose the most relevant category.</li>
                 <li>Add a short but complete job description.</li>
-                <li>Check the company logo link before saving.</li>
+                <li>Upload a clear company logo image before saving.</li>
               </ul>
             </section>
 
@@ -227,17 +394,17 @@ export function NewJobPage({ categories, error }: NewJobPageProps) {
 function FormControl({
   id,
   label,
-  name,
   placeholder,
-  required = false,
-  type = "text",
+  registration,
+  disabled = false,
+  error,
 }: {
   id: string;
   label: string;
-  name: string;
   placeholder: string;
-  required?: boolean;
-  type?: "text" | "url";
+  registration: UseFormRegisterReturn;
+  disabled?: boolean;
+  error?: string;
 }) {
   return (
     <div>
@@ -246,14 +413,15 @@ function FormControl({
       </label>
       <Input
         id={id}
-        name={name}
-        type={type}
-        required={required}
+        disabled={disabled}
         placeholder={placeholder}
         autoComplete="off"
-        className="mt-2 h-10 rounded-[11px] border-[#D6DDEB] bg-white text-[#25324B]"
+        className="mt-2 h-10 rounded-[11px] border-[#D6DDEB] bg-white text-[#25324B] disabled:cursor-not-allowed disabled:opacity-70"
+        {...registration}
       />
+      {error ? (
+        <p className="mt-1 text-[12px] font-medium text-[#C03F3F]">{error}</p>
+      ) : null}
     </div>
   );
 }
-

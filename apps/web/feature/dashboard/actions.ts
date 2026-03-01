@@ -2,10 +2,11 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { ADMIN_JOB_CATEGORIES, type AdminJobCategory } from "./constants";
 import {
-  ADMIN_JOB_CATEGORIES,
   createAdminJob,
   deleteAdminJob,
+  uploadAdminImage,
 } from "./admin-api";
 
 const toRedirectUrl = (
@@ -65,13 +66,29 @@ export async function createJobAction(formData: FormData): Promise<void> {
   const company = normalizeString(formData.get("company"));
   const location = normalizeString(formData.get("location"));
   const category = normalizeString(formData.get("category"));
-  const imageUrl = normalizeString(formData.get("image_url"));
   const description = normalizeString(formData.get("description"));
+  const companyLogo = formData.get("company_logo");
 
-  if (!title || !company || !location || !imageUrl || !description) {
+  if (!title || !company || !location || !description) {
     redirect(
       toRedirectUrl("/dashboard/new-job", {
         error: "Please fill in all required fields.",
+      }),
+    );
+  }
+
+  if (!(companyLogo instanceof File) || companyLogo.size === 0) {
+    redirect(
+      toRedirectUrl("/dashboard/new-job", {
+        error: "Company logo is required.",
+      }),
+    );
+  }
+
+  if (!companyLogo.type.startsWith("image/")) {
+    redirect(
+      toRedirectUrl("/dashboard/new-job", {
+        error: "Company logo must be an image file.",
       }),
     );
   }
@@ -83,6 +100,7 @@ export async function createJobAction(formData: FormData): Promise<void> {
       }),
     );
   }
+  const validCategory = category as AdminJobCategory;
 
   if (description.length < 10) {
     redirect(
@@ -92,12 +110,25 @@ export async function createJobAction(formData: FormData): Promise<void> {
     );
   }
 
+  const uploadResult = await uploadAdminImage(
+    companyLogo,
+    "/quick-hire/author-companies",
+  );
+
+  if (!uploadResult.ok) {
+    redirect(
+      toRedirectUrl("/dashboard/new-job", {
+        error: uploadResult.message,
+      }),
+    );
+  }
+
   const result = await createAdminJob({
-    category,
+    category: validCategory,
     company,
     description,
     employment_type: "Full Time",
-    image_url: imageUrl,
+    image_url: uploadResult.data.url,
     location,
     title,
   });
@@ -118,4 +149,3 @@ export async function createJobAction(formData: FormData): Promise<void> {
     }),
   );
 }
-

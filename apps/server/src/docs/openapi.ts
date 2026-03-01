@@ -350,6 +350,22 @@ export const openApiDocument = {
           "201": { description: "Job created" },
         },
       },
+      patch: {
+        tags: ["Admin", "Jobs"],
+        summary: "Admin create job (PATCH)",
+        security: [{ adminApiKey: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: { $ref: "#/components/schemas/CreateJobInput" },
+            },
+          },
+        },
+        responses: {
+          "201": { description: "Job created" },
+        },
+      },
     },
     "/api/admin/jobs/{id}": {
       delete: {

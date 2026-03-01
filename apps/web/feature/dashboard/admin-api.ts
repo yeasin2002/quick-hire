@@ -1,44 +1,14 @@
 import "server-only";
+import type { AdminCategory, AdminJob, AdminJobCreateInput } from "./constants";
+export type { AdminCategory, AdminJob, AdminJobCategory, AdminJobCreateInput } from "./constants";
 
-export const ADMIN_JOB_CATEGORIES = [
-  "Design",
-  "Sales",
-  "Marketing",
-  "Finance",
-  "Technology",
-  "Engineering",
-  "Business",
-  "Human Resource",
-] as const;
-
-export type AdminJobCategory = (typeof ADMIN_JOB_CATEGORIES)[number];
-
-export type AdminJob = {
-  category: AdminJobCategory;
-  company: string;
-  created_at: string;
-  description: string;
-  employment_type: "Full Time";
-  id: string;
-  image_url: string;
-  location: string;
-  title: string;
-};
-
-export type AdminCategory = {
-  available_jobs: number;
-  image_url: string;
-  title: AdminJobCategory;
-};
-
-export type AdminJobCreateInput = {
-  category: AdminJobCategory;
-  company: string;
-  description: string;
-  employment_type: "Full Time";
-  image_url: string;
-  location: string;
-  title: string;
+export type UploadedAdminImage = {
+  fileId: string;
+  height?: number;
+  name: string;
+  thumbnailUrl?: string;
+  url: string;
+  width?: number;
 };
 
 type ApiErrorResponse = {
@@ -141,6 +111,53 @@ const request = async <T>(
   }
 };
 
+const requestFormData = async <T>(
+  path: string,
+  body: FormData,
+): Promise<AdminApiResult<T>> => {
+  try {
+    const headers = new Headers();
+    headers.set("Accept", "application/json");
+
+    if (ADMIN_API_KEY) {
+      headers.set("x-admin-key", ADMIN_API_KEY);
+    }
+
+    const response = await fetch(toApiUrl(path), {
+      body,
+      cache: "no-store",
+      headers,
+      method: "POST",
+    });
+
+    const raw = await response.text();
+    const payload = raw ? (JSON.parse(raw) as ApiSuccessResponse<T> | ApiErrorResponse) : undefined;
+
+    if (!response.ok) {
+      return {
+        message: getErrorMessage(
+          payload as ApiErrorResponse | undefined,
+          `Request failed with status ${response.status}`,
+        ),
+        ok: false,
+        status: response.status,
+      };
+    }
+
+    return {
+      data: (payload as ApiSuccessResponse<T> | undefined)?.data as T,
+      ok: true,
+      status: response.status,
+    };
+  } catch {
+    return {
+      message: "Could not connect to the backend service.",
+      ok: false,
+      status: 500,
+    };
+  }
+};
+
 export const getAdminJobs = async (): Promise<AdminApiResult<AdminJob[]>> => {
   return request<AdminJob[]>("/api/admin/jobs");
 };
@@ -156,8 +173,19 @@ export const createAdminJob = async (
 ): Promise<AdminApiResult<AdminJob>> => {
   return request<AdminJob>("/api/admin/jobs", {
     body: JSON.stringify(input),
-    method: "POST",
+    method: "PATCH",
   });
+};
+
+export const uploadAdminImage = async (
+  file: File,
+  folder = "/quick-hire/author-companies",
+): Promise<AdminApiResult<UploadedAdminImage>> => {
+  const formData = new FormData();
+  formData.set("file", file);
+  formData.set("folder", folder);
+
+  return requestFormData<UploadedAdminImage>("/api/admin/uploads/image", formData);
 };
 
 export const deleteAdminJob = async (
@@ -167,4 +195,3 @@ export const deleteAdminJob = async (
     method: "DELETE",
   });
 };
-
